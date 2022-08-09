@@ -1,0 +1,25 @@
+ABC_CLIP:
+  # text input, user can submit free-text to describe his/her manifest
+  description: "some description here"
+  # dropdown menu with one option (select one)
+  barcode_file: "barcode_set1.csv"
+  # dropdown menu with three options (select one)
+  adapter_file:
+    - "InvRiL19_adapters.fasta"
+    - "InvRNA1.fasta"
+    - "InvRNA2.fasta"
+  # dropdown menu with two options (select one)
+  chrom_sizes:
+    - "hg38.chrom.sizes"
+    - "hg19.chrom.sizes"
+  # dropdown menu with two options (select at least one)
+  star_index:
+    - "star_2_7_gencode29_sjdb"
+    - "star_2_7_6a_release6_sjdb"
+  umi_pattern: "XXXXXNNNNN"
+  # fastqs, one or more text inputs (users can define one or more fastq files using an 'add fastq' button)
+  fastqs:
+    - "ABC009_1_S1_R1_001_small.fastq.gz"
+    - "ABC009_2_S2_R1_001_small.fastq.gz"
+    - "ABC009_3_S3_R1_001_small.fastq.gz"
+    - "ABC009_4_S4_R1_001_small.fastq.gz"
