@@ -1,0 +1,10 @@
+blog_post:
+  - title: "test post please ignore"
+    text: "this is a test!"
+  - title: "test post 2"
+    text: "test~"
+    attribute:
+      - author: 'attribute 1'
+  - title: "test 3"
+    text: "test 3 text"
+    timestamp: "2022-08-09"
