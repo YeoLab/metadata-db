@@ -5,8 +5,13 @@ from .models import Post
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import PostForm
+import yaml
 
 # Create your views here.
+
+# initialize empty dictionary (should i use a constructor?)
+dict_file = {}
+dict_file['blog_post'] = []
 
 def post_list(request):
     # renders our template blog/post_list.html
@@ -21,6 +26,7 @@ def post_detail(request, pk):
     return render(request, 'blog/post_detail.html', {'post': post})
 
 def post_new(request):
+
     # all form data typed
     if request.method == "POST":
         # construct PostForm with data from the form
@@ -35,6 +41,7 @@ def post_new(request):
             post.published_date = timezone.now()
             # preserve changes (author and date)
             post.save()
+            make_yaml(post)
             # go to post_detail page to see new blog post
             return redirect('post_detail', pk=post.pk)
     # blank form
@@ -58,3 +65,23 @@ def post_edit(request, pk):
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
 
+def make_yaml(post):
+    # create new dict
+            post_dict = {}
+            # update values at 'title' and 'text' key
+            post_dict['title'] = post.title
+            post_dict['text'] = post.text
+            # add this dict to list stored in 'blog_post' key
+            dict_file['blog_post'].append(post_dict)
+            # write to yaml
+            with open(r'./output_yaml/sample_output.yaml', "w") as file:
+                documents = yaml.dump(dict_file, file)
+            # for debugging
+            #print(dict_file)
+
+def edit_yaml(post):
+    # not sure how to find index to assess this specific dict in array 
+    # perhaps create hashmap: title-> index? idk
+
+    with open(r'./output_yaml/sample_output.yaml', "w") as file:
+        documents = yaml.dump(dict_file, file)   
