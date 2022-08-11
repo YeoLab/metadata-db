@@ -9,10 +9,6 @@ import yaml
 
 # Create your views here.
 
-# initialize empty dictionary (should i use a constructor?)
-dict_file = {}
-dict_file['blog_post'] = []
-
 def post_list(request):
     # renders our template blog/post_list.html
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
@@ -26,7 +22,6 @@ def post_detail(request, pk):
     return render(request, 'blog/post_detail.html', {'post': post})
 
 def post_new(request):
-
     # all form data typed
     if request.method == "POST":
         # construct PostForm with data from the form
@@ -41,6 +36,7 @@ def post_new(request):
             post.published_date = timezone.now()
             # preserve changes (author and date)
             post.save()
+            # for every new post, create new YAML
             make_yaml(post)
             # go to post_detail page to see new blog post
             return redirect('post_detail', pk=post.pk)
@@ -60,28 +56,36 @@ def post_edit(request, pk):
             post.author = request.user
             post.published_date = timezone.now()
             post.save()
+            #edit_yaml(post)
             return redirect('post_detail', pk=post.pk)
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
 
 def make_yaml(post):
+    # add table name as key 
+    # still not sure how to access db name 'blog_post' w/o hardcoding it
+    post.post_dict['blog_post'] = [] 
     # create new dict
-            post_dict = {}
-            # update values at 'title' and 'text' key
-            post_dict['title'] = post.title
-            post_dict['text'] = post.text
-            # add this dict to list stored in 'blog_post' key
-            dict_file['blog_post'].append(post_dict)
-            # write to yaml
-            with open(r'./output_yaml/sample_output.yaml', "w") as file:
-                documents = yaml.dump(dict_file, file)
-            # for debugging
-            #print(dict_file)
+    field_dict = {}
+    # update values at 'title' and 'text' key
 
-def edit_yaml(post):
-    # not sure how to find index to assess this specific dict in array 
-    # perhaps create hashmap: title-> index? idk
+    '''
+    one way to not hard-code it: i'm trying to assess title and text fields from the form
+    for x in post.fields:
+        field_dict[str(x)] = post.cleaned_data.get(str(x))
+    '''
 
-    with open(r'./output_yaml/sample_output.yaml', "w") as file:
-        documents = yaml.dump(dict_file, file)   
+    field_dict['title'] = post.title
+    field_dict['text'] = post.text
+    post.post_dict['blog_post'].append(field_dict)
+    # write to yaml
+    with open(r'./output_yaml/sample_output-' + str(post.id) + '.yaml', "w") as file:
+        documents = yaml.dump(post.post_dict, file)
+
+#def edit_yaml(post):
+    # look up 
+
+
+#def all_posts_yaml():
+    #return 
