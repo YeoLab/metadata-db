@@ -5,6 +5,7 @@ from .models import Post
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import PostForm
+import yaml
 
 # Create your views here.
 
@@ -35,6 +36,8 @@ def post_new(request):
             post.published_date = timezone.now()
             # preserve changes (author and date)
             post.save()
+            # for every new post, create new YAML
+            make_yaml(post, form)
             # go to post_detail page to see new blog post
             return redirect('post_detail', pk=post.pk)
     # blank form
@@ -53,8 +56,29 @@ def post_edit(request, pk):
             post.author = request.user
             post.published_date = timezone.now()
             post.save()
+            # when editing form, overwrite existing form with new YAML
+            make_yaml(post, form)
             return redirect('post_detail', pk=post.pk)
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
 
+def make_yaml(post, form):
+    # initialize new YAML file by initializing dict
+    post_dict = dict()
+    # create key with data table name, list as value
+    post_dict[post._meta.db_table] = [] 
+    # create new dict
+    field_dict = dict()
+
+    # iterate through form field names
+    for x in form.fields:
+        # map form field values to form field names in field dict
+        field_dict[str(x)] = form.cleaned_data.get(str(x))
+
+    # append this to list mapped to db_table key
+    post_dict[post._meta.db_table].append(field_dict)
+
+    # write to YAML
+    with open(r'./output_yaml/sample_output-' + str(post.id) + '.yaml', "w") as file:
+        documents = yaml.dump(post_dict, file)
