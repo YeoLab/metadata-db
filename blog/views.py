@@ -37,7 +37,7 @@ def post_new(request):
             # preserve changes (author and date)
             post.save()
             # for every new post, create new YAML
-            make_yaml(post)
+            make_yaml(post, form)
             # go to post_detail page to see new blog post
             return redirect('post_detail', pk=post.pk)
     # blank form
@@ -56,36 +56,29 @@ def post_edit(request, pk):
             post.author = request.user
             post.published_date = timezone.now()
             post.save()
-            #edit_yaml(post)
+            # when editing form, overwrite existing form with new YAML
+            make_yaml(post, form)
             return redirect('post_detail', pk=post.pk)
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
 
-def make_yaml(post):
-    # add table name as key 
-    # still not sure how to access db name 'blog_post' w/o hardcoding it
-    post.post_dict['blog_post'] = [] 
+def make_yaml(post, form):
+    # initialize new YAML file by initializing dict
+    post_dict = dict()
+    # create key with data table name, list as value
+    post_dict[post._meta.db_table] = [] 
     # create new dict
     field_dict = {}
-    # update values at 'title' and 'text' key
 
-    '''
-    one way to not hard-code it: i'm trying to assess title and text fields from the form
-    for x in post.fields:
-        field_dict[str(x)] = post.cleaned_data.get(str(x))
-    '''
+    # iterate through form field names
+    for x in form.fields:
+        # map form field values to form field names in field dict
+        field_dict[str(x)] = form.cleaned_data.get(str(x))
 
-    field_dict['title'] = post.title
-    field_dict['text'] = post.text
-    post.post_dict['blog_post'].append(field_dict)
-    # write to yaml
+    # append this to list mapped to db_table key
+    post_dict[post._meta.db_table].append(field_dict)
+
+    # write to YAML
     with open(r'./output_yaml/sample_output-' + str(post.id) + '.yaml', "w") as file:
-        documents = yaml.dump(post.post_dict, file)
-
-#def edit_yaml(post):
-    # look up 
-
-
-#def all_posts_yaml():
-    #return 
+        documents = yaml.dump(post_dict, file)
