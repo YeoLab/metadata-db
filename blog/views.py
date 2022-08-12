@@ -69,7 +69,7 @@ def make_yaml(post, form):
     # create key with data table name, list as value
     post_dict[post._meta.db_table] = [] 
     # create new dict
-    field_dict = {}
+    field_dict = dict()
 
     # iterate through form field names
     for x in form.fields:
