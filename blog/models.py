@@ -18,3 +18,35 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+class CLIP(models.Model):
+    bar_choices = [
+        ("barcode_set1.csv", "barcode_set1.csv"),
+    ]
+    adapt_choices = [
+        ("InvRiL19_adapters.fasta", "InvRiL19_adapters.fasta"), 
+        ("InvRNA1.fasta", "InvRNA1.fasta"), 
+        ("InvRNA2.fasta", "InvRNA2.fasta"),
+    ]
+    chrom_choices = [
+        ("hg38.chrom.sizes", "hg38.chrom.sizes"), 
+        ("hg19.chrom.sizes","hg19.chrom.sizes"),
+    ]
+    star_choices = [
+        ("star_2_7_gencode29_sjdb", "star_2_7_gencode29_sjdb"), 
+        ("star_2_7_6a_release6_sjdb", "star_2_7_6a_release6_sjdb"),
+    ]
+    
+    description = models.TextField(max_length = 200)
+    barcode_file = models.CharField(max_length = 25, choices=bar_choices)
+    adapter_file = models.CharField(max_length = 50, choices=adapt_choices)
+    chrom_sizes = models.CharField(max_length = 50, choices=chrom_choices)
+    star_index = models.CharField(max_length = 50, choices=star_choices)
+    umi_pattern = models.CharField(max_length = 10)
+    # set default: 10 Ns
+    fastqs = models.CharField(max_length = 200)
+
+    def _str_(self):
+        return self.barcode_file
+
+  
