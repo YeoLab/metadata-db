@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from multiselectfield import MultiSelectField
 
 class Post(models.Model):
     # link to another model
@@ -41,7 +42,7 @@ class CLIP(models.Model):
     barcode_file = models.CharField(max_length = 25, choices=bar_choices)
     adapter_file = models.CharField(max_length = 50, choices=adapt_choices)
     chrom_sizes = models.CharField(max_length = 50, choices=chrom_choices)
-    star_index = models.CharField(max_length = 50, choices=star_choices)
+    star_index = MultiSelectField(choices=star_choices)
     umi_pattern = models.CharField(max_length = 10)
     # set default: 10 Ns
     fastqs = models.CharField(max_length = 200)

@@ -85,10 +85,11 @@ def post_yaml(post, form):
         documents = yaml.dump(post_dict, file)
 
 
-def CLIP(request):
+def CLIP_form(request):
     if request.method == 'POST':
         form = CLIPForm(request.POST)
         if form.is_valid():
+            clip = form.save(commit=False)
             description = form.cleaned_data['description']
             barcode_file = form.cleaned_data['barcode_file']
             adapter_file = form.cleaned_data['adapter_file']
@@ -96,25 +97,26 @@ def CLIP(request):
             star_index = form.cleaned_data['star_index']
             umi_pattern = form.cleaned_data['umi_pattern']
             fastqs = form.cleaned_data['fastqs']
-
-            CLIP_yaml(form)
+            clip.save()
+            CLIP_yaml(form, clip)
             # set variables to field values
             return redirect('/')
     else: 
         form = CLIPForm()
     return render(request, 'blog/CLIP_form.html', {'form': form})
 
-def CLIP_yaml(form):
+def CLIP_yaml(form, clip):
     # initialize new YAML file by initializing dict
     form_dict = dict()
     field_dict = dict()
 
     # iterate through form field names
-    for x in form.fields:
-        field_dict[str(x)] = form.cleaned_data.get(str(x))
+    for fields in form.fields:
+        print(form.cleaned_data.get(fields))
+        field_dict[fields] = form.cleaned_data.get(fields)
         
     form_dict['CLIP_Form'] = field_dict
     # write to YAML
-    with open(r'./output_yaml/sample_output-' + '.yaml', "w") as file:
+    with open(r'./output_yaml/sample_output-' + str(clip.id) + '.yaml', "w") as file:
         documents = yaml.dump(form_dict, file)
 
