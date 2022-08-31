@@ -3,6 +3,8 @@
     <h2>New CLIP Submission</h2>
     <form method="POST" class="post-form">{% csrf_token %} 
         {{ form.as_p }}
+        <input type="text", "name="new">
+        <button type="submit", name="newItem", value="newItem">Add Item</button>
         <button type="submit" class="save btn btn-secondary">Submit</button>
     </form>
 {% endblock %}

@@ -33,7 +33,8 @@ $RECYCLE.BIN/
 
 # Pycharm
 .idea
+
 # Elastic Beanstalk Files
-.elasticbeanstalk/*
+.elastigitcbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml

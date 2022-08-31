@@ -87,6 +87,13 @@ def post_yaml(post, form):
 
 def CLIP_form(request):
     if request.method == 'POST':
+        #if request.POST.get("newItem"):
+            #txt = request.POST.get("new")
+            #if len(txt) > 2:
+            #   fastqs = 
+            # a good solution: arrylist of fastqs. how do i add multiple fastqs to one field? should i make fastqs into another model? manytomany field?
+
+        #else: 
         form = CLIPForm(request.POST)
         if form.is_valid():
             clip = form.save(commit=False)
