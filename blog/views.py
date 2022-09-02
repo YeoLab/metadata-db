@@ -2,7 +2,7 @@ from sqlite3 import SQLITE_CREATE_INDEX
 from django.shortcuts import render
 # include model we've written in models.py
 # . before models means curr directory or current app
-from .models import Post#, CLIP
+from .models import Post, CLIP, Fastq
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import CLIPForm, PostForm
@@ -86,15 +86,26 @@ def post_yaml(post, form):
 
 
 def CLIP_form(request):
+    fastq = Fastq.objects.get() 
+
     if request.method == 'POST':
-        #if request.POST.get("newItem"):
-            #txt = request.POST.get("new")
-            #if len(txt) > 2:
-            #   fastqs = 
+        form = CLIPForm(request.POST)
+        if request.POST.get("save"):
+            for fastq in Fastq.objects.all():
+                if request.POST.get() == "clicked":
+                    fastq.complete = True
+                else:
+                    fastq.complete = False
+
+                fastq.save() 
+        elif request.POST.get("newItem"):
+            txt = request.POST.get("new")
+            if len(txt) > 2:
+               Fastq.objects.create(title=txt, complete=False)
+            else: 
+                print("invalid")
             # a good solution: arrylist of fastqs. how do i add multiple fastqs to one field? should i make fastqs into another model? manytomany field?
 
-        #else: 
-        form = CLIPForm(request.POST)
         if form.is_valid():
             clip = form.save(commit=False)
             description = form.cleaned_data['description']
@@ -110,7 +121,8 @@ def CLIP_form(request):
             return redirect('/')
     else: 
         form = CLIPForm()
-    return render(request, 'blog/CLIP_form.html', {'form': form})
+    return render(request, 'blog/CLIP_form.html', {'form': form, 'fastq': fastq})
+
 
 def CLIP_yaml(form, clip):
     # initialize new YAML file by initializing dict

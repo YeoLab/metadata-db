@@ -43,11 +43,17 @@ class CLIP(models.Model):
     adapter_file = models.CharField(max_length = 50, choices=adapt_choices)
     chrom_sizes = models.CharField(max_length = 50, choices=chrom_choices)
     star_index = MultiSelectField(choices=star_choices)
-    umi_pattern = models.CharField(max_length = 10)
+    umi_pattern = models.CharField(max_length = 10, default = "NNNNNNNNNN")
     # set default: 10 Ns
     fastqs = models.CharField(max_length = 200)
 
     def _str_(self):
         return self.barcode_file
 
+class Fastq(models.Model):
+    title = models.CharField(max_length=100)
+    complete = models.BooleanField()
+
+    def __str__(self):
+        return self.title
   
