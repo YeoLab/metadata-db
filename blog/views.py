@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.shortcuts import render
 # include model we've written in models.py
 # . before models means curr directory or current app
@@ -85,24 +87,27 @@ def make_yaml(post, form):
 
 
 def CLIP_form(request):
-    fastq = Fastq.objects.all()
+    fastq = Fastq.objects.all()  # will list ALL fastq entries since the beginning of time
 
     if request.method == 'POST':
         form = CLIPForm(request.POST)
         if request.POST.get("save"):
             fastqs = []
-            print(request.POST)
-            for fastq in Fastq.objects.all():
-                fastqs.append(str(fastq))
-                fastq.complete = True
-                fastq.save()
+            for key in request.POST.keys():
+                try:
+                    if key.startswith('fqid_'):  # TODO: refactor, hacky
+                        Fastq.objects.get(pk=request.POST.get(key))
+                        fastqs.append(request.POST.get(key))
+                except Exception as e:
+                    print(e)  # TODO: log
+                    pass
 
             if form.is_valid():
                 clip = form.save(commit=False)
-                clip.fastqs = ','.join(fastqs)
+                clip.fastqs = ','.join(fastqs)  # fastqs is a CharField, save all fastq ids as str(comma-separated list)
 
                 clip.save()
-                CLIP_yaml(form, clip)
+                CLIP_yaml(clip)
                 # set variables to field values
                 return redirect('/CLIP/')
 
@@ -118,17 +123,20 @@ def CLIP_form(request):
     return render(request, 'blog/CLIP_form.html', {'form': form, 'fastq': fastq})
 
 
-def CLIP_yaml(form, clip):
+def CLIP_yaml(clip):
     # initialize new YAML file by initializing dict
-    form_dict = dict()
     field_dict = dict()
+    field_dict['fastqs'] = []
 
     # iterate through form field names
-    for fields in form.fields:
-        print(form.cleaned_data.get(fields))
-        field_dict[fields] = form.cleaned_data.get(fields)
+    for field, value in clip.__dict__.items():
+        if field == 'fastqs':
+            for i in value.split(','):
+                fastq = Fastq.objects.get(pk=i)
+                field_dict['fastqs'].append({'title': fastq.title, 'path': fastq.path, 'adapter_path': fastq.adapter_path})
+        elif field != '_state':
+            field_dict[field] = value
 
-    form_dict['CLIP_Form'] = field_dict
     # write to YAML
     with open(r'./output_yaml/sample_output-' + str(clip.id) + '.yaml', "w") as file:
-        documents = yaml.dump(form_dict, file)
+        documents = yaml.dump(field_dict, file)

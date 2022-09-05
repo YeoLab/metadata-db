@@ -48,6 +48,7 @@ class CLIP(models.Model):
 
 
 class Fastq(models.Model):
+
     adapt_choices = [
         ("InvRiL19_adapters.fasta", "InvRiL19_adapters.fasta"),
         ("InvRNA1.fasta", "InvRNA1.fasta"),
