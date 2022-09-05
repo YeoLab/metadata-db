@@ -1,10 +1,10 @@
 from django.shortcuts import render
 # include model we've written in models.py
 # . before models means curr directory or current app
-from .models import Post
+from .models import Post, Fastq
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
-from .forms import PostForm
+from .forms import PostForm, CLIPForm
 import yaml
 
 # Create your views here.
@@ -82,3 +82,51 @@ def make_yaml(post, form):
     # write to YAML
     with open(r'./output_yaml/sample_output-' + str(post.id) + '.yaml', "w") as file:
         documents = yaml.dump(post_dict, file)
+
+
+def CLIP_form(request):
+    fastq = Fastq.objects.all()
+
+    if request.method == 'POST':
+        form = CLIPForm(request.POST)
+        if request.POST.get("save"):
+            fastqs = []
+            print(request.POST)
+            for fastq in Fastq.objects.all():
+                fastqs.append(str(fastq))
+                fastq.complete = True
+                fastq.save()
+
+            if form.is_valid():
+                clip = form.save(commit=False)
+                clip.fastqs = ','.join(fastqs)
+
+                clip.save()
+                CLIP_yaml(form, clip)
+                # set variables to field values
+                return redirect('/CLIP/')
+
+        elif request.POST.get("newItem"):
+            txt = request.POST.get("new_fastq")
+            Fastq.objects.create(title=txt, complete=False)
+
+            return redirect('/CLIP/')
+    else:
+        form = CLIPForm()
+    return render(request, 'blog/CLIP_form.html', {'form': form, 'fastq': fastq})
+
+
+def CLIP_yaml(form, clip):
+    # initialize new YAML file by initializing dict
+    form_dict = dict()
+    field_dict = dict()
+
+    # iterate through form field names
+    for fields in form.fields:
+        print(form.cleaned_data.get(fields))
+        field_dict[fields] = form.cleaned_data.get(fields)
+
+    form_dict['CLIP_Form'] = field_dict
+    # write to YAML
+    with open(r'./output_yaml/sample_output-' + str(clip.id) + '.yaml', "w") as file:
+        documents = yaml.dump(form_dict, file)
