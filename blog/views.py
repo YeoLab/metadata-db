@@ -107,8 +107,10 @@ def CLIP_form(request):
                 return redirect('/CLIP/')
 
         elif request.POST.get("newItem"):
-            txt = request.POST.get("new_fastq")
-            Fastq.objects.create(title=txt, complete=False)
+            fastq_title = request.POST.get("fastq_title")
+            fastq_path = request.POST.get("fastq_path")
+            adapter_path = request.POST.get("adapter_path")
+            Fastq.objects.create(title=fastq_title, path=fastq_path, adapter_path=adapter_path, complete=False)
 
             return redirect('/CLIP/')
     else:

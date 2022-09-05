@@ -28,5 +28,5 @@ class CLIPForm(forms.ModelForm):
         )
         # TODO: find appropriate widget for each field.
         widgets = {
-            'fastqs': HiddenInput
+            'fastqs': HiddenInput  # hide field since fastqs will be added using separate input
         }
