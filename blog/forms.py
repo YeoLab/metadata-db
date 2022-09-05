@@ -1,7 +1,7 @@
 # import django forms
 from django import forms
 # import Post model
-from django.forms import SelectMultiple, HiddenInput
+from django.forms import HiddenInput
 
 from .models import Post, CLIP
 
