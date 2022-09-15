@@ -1,7 +1,10 @@
 # import django forms
 from django import forms
 # import Post model
-from .models import Post
+from django.forms import HiddenInput
+
+from .models import Post, CLIP
+
 
 # is a ModelForm
 class PostForm(forms.ModelForm):
@@ -10,3 +13,20 @@ class PostForm(forms.ModelForm):
         model = Post
         # which fields end up in the form
         fields = ('title', 'text',)
+
+
+class CLIPForm(forms.ModelForm):
+    class Meta:
+        model = CLIP
+        fields = (
+            'description',
+            'barcode_file',
+            'chrom_sizes',
+            'star_index',
+            'umi_pattern',
+            'fastqs',
+        )
+        # TODO: find appropriate widget for each field.
+        widgets = {
+            'fastqs': HiddenInput  # hide field since fastqs will be added using separate input
+        }

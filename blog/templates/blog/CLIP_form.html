@@ -1,0 +1,24 @@
+{% extends 'blog/base.html' %} 
+{% block content %} 
+    <h2>New CLIP Submission</h2>
+    <form method="POST" class="post-form">{% csrf_token %} 
+        {{ form.as_p }}
+        <p>Add fastq</p>
+        fastq name<input type="text" name="fastq_title">
+        fastq path<input type="text" name="fastq_path">
+        adapter path<input type="text" name="adapter_path">
+        <ul>
+            {% for fastq in fastq %} 
+                {% if fastq.complete == True %} <!-- Not sure what complete means? -->
+                    <li><input type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true">{{fastq.title}}</li>
+                {% else %}
+                    <li><input type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true">{{fastq.title}}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+        <button type="submit" name="newItem" value="newItem">Add Item</button>
+        <button type="submit" name="save" value="save">Save Fastq</button>
+        <!-- <button type="submit" class="save btn btn-secondary">Submit</button> -->
+    </form>
+{% endblock %}
