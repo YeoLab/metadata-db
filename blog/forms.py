@@ -1,6 +1,4 @@
 # import django forms
-from pickle import FALSE
-from sqlite3 import SQLITE_CREATE_INDEX
 from django import forms
 # import Post model
 from django.forms import HiddenInput
