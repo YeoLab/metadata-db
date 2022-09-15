@@ -3,7 +3,7 @@ from collections import defaultdict
 from django.shortcuts import render
 # include model we've written in models.py
 # . before models means curr directory or current app
-from .models import Post, Fastq
+from .models import Post, Fastq, CLIP
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import PostForm, CLIPForm
@@ -116,8 +116,6 @@ def CLIP_form(request):
             fastq_path = request.POST.get("fastq_path")
             adapter_path = request.POST.get("adapter_path")
             Fastq.objects.create(title=fastq_title, path=fastq_path, adapter_path=adapter_path, complete=False)
-
-            return redirect('/CLIP/')
     else:
         form = CLIPForm()
     return render(request, 'blog/CLIP_form.html', {'form': form, 'fastq': fastq})
