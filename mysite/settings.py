@@ -24,10 +24,31 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = str(os.getenv('SECRET'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if os.environ['PLATFORM'] != 'PRD' else False
 
 ALLOWED_HOSTS = ['127.0.0.1', '54.215.31.138', '172.31.1.44', '*']
 
+
+def get_linux_ec2_private_ip():
+    """
+    This will automatically add the instance's Private IP to ALLOWED_HOSTS
+    during startup.
+    This will also avoid  issues in the future during any scaling activities
+    or any updates that can cause the instances to be replaced as the
+    new instances will have new IPs which are not set in the ALLOWED_HOSTS.
+    """
+    from urllib.request import urlopen
+
+    try:
+        response = urlopen('http://169.254.169.254/latest/meta-data/local-ipv4', timeout=3)  # noqa
+        return response.read().decode("utf-8")
+    except Exception:
+        return None
+    finally:
+        try:
+            response.close()  # noqa
+        except UnboundLocalError:
+            pass
 
 # Application definition
 
@@ -75,13 +96,24 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.environ['PLATFORM'] == 'DEV':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
