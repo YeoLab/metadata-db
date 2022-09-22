@@ -1,9 +1,9 @@
 # import django forms
 from django import forms
 # import Post model
-from django.forms import HiddenInput
+from django.forms import HiddenInput, Select
 
-from .models import Post, CLIP
+from .models import Post, CLIPManifest, Fastq
 
 
 # is a ModelForm
@@ -15,18 +15,40 @@ class PostForm(forms.ModelForm):
         fields = ('title', 'text',)
 
 
-class CLIPForm(forms.ModelForm):
+class CLIPManifestForm(forms.ModelForm):
     class Meta:
-        model = CLIP
+        model = CLIPManifest
         fields = (
             'description',
-            'barcode_file',
             'chrom_sizes',
+            'barcode_file',
+            'repeat_index',
             'star_index',
             'umi_pattern',
             'fastqs',
         )
         # TODO: find appropriate widget for each field.
         widgets = {
-            'fastqs': HiddenInput  # hide field since fastqs will be added using separate input
+            'fastqs': HiddenInput,  # hide field since fastqs will be added using separate input
+            'barcode_file': HiddenInput
+        }
+
+
+class FastqForm(forms.ModelForm):
+    class Meta:
+        model = Fastq
+        fields = (
+            'ip_title',
+            'ip_path',
+            'ip_adapter_path',
+            'ip_complete',
+            'sminput_title',
+            'sminput_path',
+            'sminput_adapter_path',
+            'sminput_complete',
+        )
+        # TODO: find appropriate widget for each field.
+        widgets = {
+            'ip_adapter_path': Select,
+            'sminput_adapter_path': Select,
         }
