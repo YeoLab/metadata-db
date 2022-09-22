@@ -3,17 +3,44 @@
     <h2>New CLIP Submission</h2>
     <form method="POST" class="post-form">{% csrf_token %} 
         {{ form.as_p }}
-        <p>Add fastq</p>
-        fastq name<input type="text" name="fastq_title">
-        fastq path<input type="text" name="fastq_path">
-        adapter path<input type="text" name="adapter_path">
+        <p>Add CLIP fastq</p>
+        <div>
+            CLIP fastq name<div><input type="text" name="ip_fastq_title"></div>
+        </div>
+        <div>
+            CLIP fastq path<div><input type="text" name="ip_fastq_path"></div>
+        </div>
+        <div>
+            CLIP adapter path
+            <div>
+                <select id="ip_adapter_path" name="ip_adapter_path">
+                {% for x, y in form.fields.barcode_file.choices %}
+                    <option value="{{ x }}"{% if form.fields.barcode_file.value == x %} selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+                </select>
+            </div>
+        </div>
+        <p>Add SIZE MATCHED INPUT fastq</p>
+        <div>
+            SMINPUT fastq name<div><input type="text" name="sminput_fastq_title"></div>
+        </div>
+        <div>
+            SMINPUT fastq path<div><input type="text" name="sminput_fastq_path"></div>
+        </div>
+        <div>
+            SMINPUT adapter path
+            <div>
+                <select id="sminput_adapter_path" name="sminput_adapter_path">
+                {% for x, y in form.fields.barcode_file.choices %}
+                    <option value="{{ x }}"{% if form.fields.barcode_file.value == x %} selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+                </select>
+            </div>
+        </div>
+
         <ul>
             {% for fastq in fastq %} 
-                {% if fastq.complete == True %} <!-- Not sure what complete means? -->
-                    <li><input type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true">{{fastq.title}}</li>
-                {% else %}
-                    <li><input type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true">{{fastq.title}}</li>
-                {% endif %}
+                <li><input type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true">{{fastq.ip_title}}: {{fastq.ip_path}}</li>
             {% endfor %}
         </ul>
 
