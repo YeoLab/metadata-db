@@ -1,12 +1,19 @@
 {% extends 'blog/base.html' %}
 {% block content %}
-    <h2>New CLIP Submission</h2>
+
     <form method="POST" class="post-form">{% csrf_token %}
-        {{ form.as_p }}
         <div class="container">
+            <h1>New CLIP Submission</h1>
+            {{ form.as_p }} <!-- main form -->
+        </div>
+
+        <div class="container">
+            <hr>
+            <h2>Add new sample (Full paths only)</h2>
             <div class="row">
                 <div class="col-sm">
-                    <p>Add CLIP fastq</p>
+                    <h4>Add CLIP sample</h4>
+
                     <div>
                         CLIP fastq name<div><input type="text" name="ip_fastq_title"></div>
                     </div>
@@ -25,7 +32,7 @@
                     </div>
                 </div>
                 <div class="col-sm">
-                    <p>Add SIZE MATCHED INPUT fastq</p>
+                    <h4>Add SIZE MATCHED INPUT sample</h4>
                     <div>
                         SMINPUT fastq name<div><input type="text" name="sminput_fastq_title"></div>
                     </div>
@@ -37,7 +44,7 @@
                         <div>
                             <select id="sminput_adapter_path" name="sminput_adapter_path">
                             {% for x, y in form.fields.barcode_file.choices %}
-                                <option value="{{ x }}"{% if form.fields.barcode_file.value == x %} selected{% endif %}>{{ y }}</option>
+                                <option value="{{ x }}"{% if form.fields.barcode_file.value == x %} selected{% endif %}> {{ y }} </option>
                             {% endfor %}
                             </select>
                         </div>
@@ -48,13 +55,19 @@
 
 
 
-        <div class="container">
-            <ul>
+        <div class="container my-4">
+            <hr>
+            <div class="row">
+                <h2>Added fastqs</h2>
+                <h6>Check samples will be added to manifest, unchecked samples will be excluded.</h6>
+                <ul>
                 {% for fastq in fastq %}
                     <li><input type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true">{{fastq.ip_title}}: {{fastq.ip_path}}</li>
                 {% endfor %}
-            </ul>
+                </ul>
 
+
+            </div>
             <button type="submit" name="newItem" value="newItem">Add Item</button>
             <button type="submit" name="save" value="save">Save Fastq</button>
             <!-- <button type="submit" class="save btn btn-secondary">Submit</button> -->
