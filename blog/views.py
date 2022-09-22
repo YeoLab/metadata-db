@@ -3,13 +3,14 @@ from collections import defaultdict
 from django.shortcuts import render
 # include model we've written in models.py
 # . before models means curr directory or current app
-from .models import Post, Fastq, CLIP
+from .models import Post, Fastq, CLIPManifest
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
-from .forms import PostForm, CLIPForm
+from .forms import PostForm, CLIPManifestForm
 import yaml
 
 # Create your views here.
+
 
 def post_list(request):
     # renders our template blog/post_list.html
@@ -19,9 +20,11 @@ def post_list(request):
     # {}a place in which we can add some things for the template to use
     return render(request, 'blog/post_list.html', {'posts': posts})
 
+
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     return render(request, 'blog/post_detail.html', {'post': post})
+
 
 def post_new(request):
     # all form data typed
@@ -47,6 +50,7 @@ def post_new(request):
         form = PostForm()
     return render(request, 'blog/post_edit.html', {'form': form})
 
+
 def post_edit(request, pk):
     # get Post model we want to edit with
     post = get_object_or_404(Post, pk=pk)
@@ -64,6 +68,7 @@ def post_edit(request, pk):
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
+
 
 def post_yaml(post, form):
     # initialize new YAML file by initializing dict
@@ -87,10 +92,10 @@ def post_yaml(post, form):
 
 
 def CLIP_form(request):
-    fastq = Fastq.objects.all()  # will list ALL fastq entries since the beginning of time
+    fastq = Fastq.objects.all().order_by('-id')[:20]  # will list the last 20
 
     if request.method == 'POST':
-        form = CLIPForm(request.POST)
+        form = CLIPManifestForm(request.POST)
         if request.POST.get("save"):
             fastqs = []
             for key in request.POST.keys():
@@ -107,17 +112,23 @@ def CLIP_form(request):
                 clip.fastqs = ','.join(fastqs)  # fastqs is a CharField, save all fastq ids as str(comma-separated list)
 
                 clip.save()
-                CLIP_yaml(clip)
+                # CLIP_yaml(clip)
                 # set variables to field values
                 return redirect('/CLIP/')
 
         elif request.POST.get("newItem"):
-            fastq_title = request.POST.get("fastq_title")
-            fastq_path = request.POST.get("fastq_path")
-            adapter_path = request.POST.get("adapter_path")
-            Fastq.objects.create(title=fastq_title, path=fastq_path, adapter_path=adapter_path, complete=False)
+            ip_fastq_title = request.POST.get("ip_fastq_title")
+            ip_fastq_path = request.POST.get("ip_fastq_path")
+            ip_adapter_path = request.POST.get("ip_adapter_path")
+            sminput_fastq_title = request.POST.get("sminput_fastq_title")
+            sminput_fastq_path = request.POST.get("sminput_fastq_path")
+            sminput_adapter_path = request.POST.get("sminput_adapter_path")
+            Fastq.objects.create(
+                ip_title=ip_fastq_title, ip_path=ip_fastq_path, ip_adapter_path=ip_adapter_path, ip_complete=False,
+                sminput_title=sminput_fastq_title, sminput_path=sminput_fastq_path, sminput_adapter_path=sminput_adapter_path, sminput_complete=False,
+            )
     else:
-        form = CLIPForm()
+        form = CLIPManifestForm()
     return render(request, 'blog/CLIP_form.html', {'form': form, 'fastq': fastq})
 
 
