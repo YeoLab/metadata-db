@@ -19,11 +19,14 @@ class CLIPManifestForm(forms.ModelForm):
     class Meta:
         model = CLIPManifest
         fields = (
+            'dataset',
             'description',
+            'species',
             'chrom_sizes',
             'barcode_file',
-            'repeat_index',
-            'star_index',
+            'speciesGenomeDir',
+            'repeatElementGenomeDir',
+            'blacklist_file',
             'umi_pattern',
             'fastqs',
         )

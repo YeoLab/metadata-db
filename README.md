@@ -39,7 +39,7 @@ Steps for deployment using Elastic Beanstalk:
 - Deploying uncommited code in case you just want to test:
     - Add changes with ```git add```
     - ```eb deploy --staged``` (this deploys staged changes as opposed to committed ones)
-
+    - Sometimes you may need to include the environment name as well: ```eb deploy metadata-db-test --staged```
 # Issues/troubleshooting
 ##### "Incorrect application version found on all instances. Expected version..." 
 [stackoverflow response](https://stackoverflow.com/questions/37104699/aws-eb-error-incorrect-application-version-found-on-all-instances)
