@@ -69,31 +69,38 @@ class CLIPManifest(models.Model):
         )
     ]
     species_choices = [('hg19', 'hg19'), ('GRCh38_v40', 'GRCh38_v40')]
-
+    exclusion_choices = [
+        (
+            "/projects/ps-yeolab4/software/eclip/0.7.0/examples/inputs/eCLIP_blacklistregions.hg38liftover.bed.fixed.bed",
+            "eCLIP_blacklistregions.hg38liftover.bed.fixed.bed"
+        )
+    ]
+    dataset = models.CharField(max_length=20, blank=True)
     description = models.CharField(max_length=200, blank=True)
-    species = models.CharField(max_length=20, choices=species_choices, blank=True)
-    repeat_index = models.CharField(max_length=120, choices=repeat_choices, blank=True)
-    star_index = models.CharField(max_length=90, choices=star_choices, blank=True)
-    chrom_sizes = models.CharField(max_length=120, choices=chrom_choices, blank=True)
-
-    umi_pattern = models.CharField(max_length=20, default="NNNNNNNNNN")
+    species = models.CharField(max_length=20, choices=species_choices, default="GRCh38_v40")
+    repeatElementGenomeDir = models.CharField(max_length=120, choices=repeat_choices, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/star_2_7_homo_sapiens_repbase_fixed_v2")
+    speciesGenomeDir = models.CharField(max_length=90, choices=star_choices, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/star_2_7_gencode40_sjdb/")
+    chrom_sizes = models.CharField(max_length=120, choices=chrom_choices, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/star_2_7_gencode40_sjdb/chrNameLength.txt")
+    blacklist_file = models.CharField(max_length=120, choices=exclusion_choices, default="/projects/ps-yeolab4/software/eclip/0.7.0/examples/inputs/eCLIP_blacklistregions.hg38liftover.bed.fixed.bed")
     # set default: 10 Ns
+    umi_pattern = models.CharField(max_length=20, default="NNNNNNNNNN")
     fastqs = models.CharField(max_length=200, blank=True)
     barcode_file = models.CharField(max_length=120, choices=barcode_choices, blank=True)
+
     def __str__(self):
-        return self.description[:100] + "..."
+        return self.dataset
 
 
 class Fastq(models.Model):
 
     ip_title = models.CharField(max_length=100)
     ip_path = models.CharField(max_length=100)
-    ip_adapter_path = models.CharField(max_length=90)
+    ip_adapter_path = models.CharField(max_length=90, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
     ip_complete = models.BooleanField()
 
     sminput_title = models.CharField(max_length=100)
     sminput_path = models.CharField(max_length=100)
-    sminput_adapter_path = models.CharField(max_length=90)
+    sminput_adapter_path = models.CharField(max_length=90, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
     sminput_complete = models.BooleanField()
 
     def __str__(self):

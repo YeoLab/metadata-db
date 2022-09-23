@@ -112,7 +112,7 @@ def CLIP_form(request):
                 clip.fastqs = ','.join(fastqs)  # fastqs is a CharField, save all fastq ids as str(comma-separated list)
 
                 clip.save()
-                # CLIP_yaml(clip)
+                CLIP_yaml(clip)
                 # set variables to field values
                 return redirect('/CLIP/')
 
@@ -135,17 +135,26 @@ def CLIP_form(request):
 def CLIP_yaml(clip):
     # initialize new YAML file by initializing dict
     field_dict = dict()
-    field_dict['fastqs'] = []
+
+    field_dict['samples'] = []
 
     # iterate through form field names
     for field, value in clip.__dict__.items():
         if field == 'fastqs':
             for i in value.split(','):
                 fastq = Fastq.objects.get(pk=i)
-                field_dict['fastqs'].append({'title': fastq.title, 'path': fastq.path, 'adapter_path': fastq.adapter_path})
-        elif field != '_state':
+                field_dict['samples'].append([
+                    {'name': fastq.ip_title, 'read1': {'class': 'File', 'path': fastq.ip_path}, 'adapters': {'class': 'File', 'path': fastq.ip_adapter_path}},
+                    {'name': fastq.sminput_title, 'read1': {'class': 'File', 'path': fastq.sminput_path}, 'adapters': {'class': 'File', 'path': fastq.sminput_adapter_path}},
+                ])
+        elif field in ['speciesGenomeDir', 'repeatElementGenomeDir']:
+            field_dict[field] = {'class': 'Directory', 'path': value}
+        elif field in ['chrom_sizes', 'blacklist_file']:
+            field_dict[field] = {'class': 'File', 'path': value}
+        elif field != '_state' and field != 'barcode_file' and field != 'id':
             field_dict[field] = value
 
     # write to YAML
     with open(r'./output_yaml/sample_output-' + str(clip.id) + '.yaml', "w") as file:
+        file.write("#!/usr/bin/env eCLIP_singleend\n")
         documents = yaml.dump(field_dict, file)
