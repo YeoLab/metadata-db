@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import PostForm, CLIPManifestForm
 import yaml
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -112,9 +113,12 @@ def CLIP_form(request):
                 clip.fastqs = ','.join(fastqs)  # fastqs is a CharField, save all fastq ids as str(comma-separated list)
 
                 clip.save()
-                CLIP_yaml(clip)
+                file_data = CLIP_yaml(clip)
                 # set variables to field values
-                return redirect('/CLIP/')
+                # return redirect('/CLIP/')
+                response = HttpResponse(file_data, content_type='application/text charset=utf-8')
+                response['Content-Disposition'] = 'attachment; filename="foo.txt"'
+                return response
 
         elif request.POST.get("newItem"):
             ip_fastq_title = request.POST.get("ip_fastq_title")
@@ -158,3 +162,9 @@ def CLIP_yaml(clip):
     with open(r'./output_yaml/sample_output-' + str(clip.id) + '.yaml', "w") as file:
         file.write("#!/usr/bin/env eCLIP_singleend\n")
         documents = yaml.dump(field_dict, file)
+
+    return "#!/usr/bin/env eCLIP_singleend\n" + yaml.dump(field_dict,default_flow_style=False)
+
+def download(request):
+   # some code
+   file_data = "some text"
