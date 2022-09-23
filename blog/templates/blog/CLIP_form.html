@@ -56,6 +56,7 @@
                     <li><input class="mx-2" type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true">{{fastq.ip_title}} over {{fastq.sminput_title}}
                     <div>{{fastq.ip_path}}</div>
                     <div>{{fastq.sminput_path}}</div>
+                    <div><button type="submit" name="delete_fqid_{{fastq.id}}" class="btn btn-danger">Delete</button></div>
                     </li>
                 {% endfor %}
                 </ul>
