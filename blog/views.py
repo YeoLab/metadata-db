@@ -159,9 +159,9 @@ def CLIP_yaml(clip):
             field_dict[field] = value
 
     # write to YAML
-    with open(r'./output_yaml/sample_output-' + str(clip.id) + '.yaml', "w") as file:
-        file.write("#!/usr/bin/env eCLIP_singleend\n")
-        documents = yaml.dump(field_dict, file)
+    # with open(r'./output_yaml/sample_output-' + str(clip.id) + '.yaml', "w") as file:
+    #     file.write("#!/usr/bin/env eCLIP_singleend\n")
+    #     documents = yaml.dump(field_dict, file)
 
     return "#!/usr/bin/env eCLIP_singleend\n" + yaml.dump(field_dict,default_flow_style=False)
 
