@@ -117,7 +117,8 @@ def CLIP_form(request):
                 # set variables to field values
                 # return redirect('/CLIP/')
                 response = HttpResponse(file_data, content_type='application/text charset=utf-8')
-                response['Content-Disposition'] = 'attachment; filename="foo.txt"'
+                f = request.POST.get('dataset', 'manifest')
+                response['Content-Disposition'] = f'attachment; filename="{f}.yaml"'
                 return response
 
         elif request.POST.get("newItem"):
@@ -165,6 +166,3 @@ def CLIP_yaml(clip):
 
     return "#!/usr/bin/env eCLIP_singleend\n" + yaml.dump(field_dict,default_flow_style=False)
 
-def download(request):
-   # some code
-   file_data = "some text"

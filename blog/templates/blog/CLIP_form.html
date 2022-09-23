@@ -11,43 +11,34 @@
             <hr>
             <h2>Add new sample (Full paths only)</h2>
             <div class="row">
-                <div class="col-sm">
+                <div class="col-md">
                     <h4>Add CLIP sample</h4>
-
-                    <div>
-                        CLIP fastq name<div><input type="text" name="ip_fastq_title"></div>
-                    </div>
-                    <div>
-                        CLIP fastq path<div><input type="text" name="ip_fastq_path"></div>
-                    </div>
-                    <div>
-                        CLIP adapter path
-                        <div>
-                            <select id="ip_adapter_path" name="ip_adapter_path">
-                            {% for x, y in form.fields.barcode_file.choices %}
-                                <option value="{{ x }}"{% if form.fields.barcode_file.value == x %} selected{% endif %}>{{ y }}</option>
-                            {% endfor %}
-                            </select>
-                        </div>
+                    <label for="ip_fastq_title">CLIP fastq name</label>
+                    <div class="col"><input class="form-control" type="text" name="ip_fastq_title" id="ip_fastq_title"></div>
+                    <label for="ip_fastq_path">CLIP fastq path</label>
+                    <div class="col"><input class="form-control" type="text" name="ip_fastq_path" id="ip_fastq_path"></div>
+                    <label for="ip_adapter_path">CLIP adapter</label>
+                    <div class="col">
+                        <select id="ip_adapter_path" name="ip_adapter_path">
+                        {% for x, y in form.fields.barcode_file.choices %}
+                            <option value="{{ x }}"{% if form.fields.barcode_file.value == x %} selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                        </select>
                     </div>
                 </div>
-                <div class="col-sm">
+                <div class="col-md">
                     <h4>Add SIZE MATCHED INPUT sample</h4>
-                    <div>
-                        SMINPUT fastq name<div><input type="text" name="sminput_fastq_title"></div>
-                    </div>
-                    <div>
-                        SMINPUT fastq path<div><input type="text" name="sminput_fastq_path"></div>
-                    </div>
-                    <div>
-                        SMINPUT adapter path
-                        <div>
-                            <select id="sminput_adapter_path" name="sminput_adapter_path">
-                            {% for x, y in form.fields.barcode_file.choices %}
-                                <option value="{{ x }}"{% if form.fields.barcode_file.value == x %} selected{% endif %}> {{ y }} </option>
-                            {% endfor %}
-                            </select>
-                        </div>
+                    <label for="sminput_fastq_title">SMINPUT fastq name</label>
+                    <div class="col"><input class="form-control" type="text" name="sminput_fastq_title" id="sminput_fastq_title"></div>
+                    <label for="sminput_fastq_path">SMINPUT fastq path</label>
+                    <div class="col"><input class="form-control" type="text" name="sminput_fastq_path" id="sminput_fastq_path"></div>
+                    <label for="sminput_adapter_path">SMINPUT adapter</label>
+                    <div class="col">
+                        <select id="sminput_adapter_path" name="sminput_adapter_path">
+                        {% for x, y in form.fields.barcode_file.choices %}
+                            <option value="{{ x }}"{% if form.fields.barcode_file.value == x %} selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                        </select>
                     </div>
                 </div>
             </div>
@@ -62,7 +53,10 @@
                 <h6>Check samples will be added to manifest, unchecked samples will be excluded.</h6>
                 <ul>
                 {% for fastq in fastq %}
-                    <li><input type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true">{{fastq.ip_title}}: {{fastq.ip_path}}</li>
+                    <li><input class="mx-2" type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true">{{fastq.ip_title}} over {{fastq.sminput_title}}
+                    <div>{{fastq.ip_path}}</div>
+                    <div>{{fastq.sminput_path}}</div>
+                    </li>
                 {% endfor %}
                 </ul>
 
