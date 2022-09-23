@@ -132,6 +132,10 @@ def CLIP_form(request):
                 ip_title=ip_fastq_title, ip_path=ip_fastq_path, ip_adapter_path=ip_adapter_path, ip_complete=False,
                 sminput_title=sminput_fastq_title, sminput_path=sminput_fastq_path, sminput_adapter_path=sminput_adapter_path, sminput_complete=False,
             )
+        else:
+            for key in request.POST.keys():
+                if key.startswith('delete_fqid_'):
+                    Fastq.objects.filter(id=int(key.split('delete_fqid_')[1])).delete()
     else:
         form = CLIPManifestForm()
     return render(request, 'blog/CLIP_form.html', {'form': form, 'fastq': fastq})
