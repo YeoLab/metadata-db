@@ -35,7 +35,7 @@ Steps for deployment using Elastic Beanstalk:
 # Deployment
 - Deploying the main code:
     - Commit changes to the main or master branch
-    - ```eb deploy```
+    - ```eb deploy metadata-db-test```
 - Deploying uncommited code in case you just want to test:
     - Add changes with ```git add```
     - ```eb deploy --staged``` (this deploys staged changes as opposed to committed ones)
