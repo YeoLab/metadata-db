@@ -1,7 +1,11 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.core.validators import RegexValidator
+
 import os
+
+ALPHANUMERICUNDERSCORE = RegexValidator(r'^[0-9a-zA-Z_]*$', 'Only alphanumeric characters are allowed.')
 
 
 class Post(models.Model):
@@ -223,17 +227,17 @@ class SkipperConfigManifest(models.Model):
 
 class Fastq(models.Model):
 
-    experiment = models.CharField(max_length=50, default="EXPERIMENT")
-    sample = models.CharField(max_length=50, default="SAMPLE")
-    cells = models.CharField(max_length=50, default="")
+    experiment = models.CharField(max_length=50, default="EXPERIMENT", validators=[ALPHANUMERICUNDERSCORE])
+    sample = models.CharField(max_length=50, default="SAMPLE", validators=[ALPHANUMERICUNDERSCORE])
+    cells = models.CharField(max_length=50, default="", validators=[ALPHANUMERICUNDERSCORE])
 
-    ip_title = models.CharField(max_length=50, default="IP")
+    ip_title = models.CharField(max_length=50, default="IP", validators=[ALPHANUMERICUNDERSCORE])
     ip_path = models.CharField(max_length=255, default="")
     ip_adapter_path = models.CharField(max_length=255, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
     ip_rep = models.IntegerField(default=1)
     ip_complete = models.BooleanField()
 
-    sminput_title = models.CharField(max_length=50, default="SMINPUT")
+    sminput_title = models.CharField(max_length=50, default="SMINPUT", validators=[ALPHANUMERICUNDERSCORE])
     sminput_path = models.CharField(max_length=255, default="")
     sminput_adapter_path = models.CharField(max_length=255, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
     sminput_rep = models.IntegerField(default=1)
