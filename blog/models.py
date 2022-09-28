@@ -98,8 +98,8 @@ class SkipperManifest(models.Model):
 class SkipperConfigManifest(models.Model):
     barcode_choices = [
         (
-            "/projects/ps-yeolab3/eboyle/encode/pipeline/adapters/InvRiL19.fasta",
-            "InvRiL19_adapters.fasta"
+            "/projects/ps-yeolab4/software/skipper/8674296/examples/InvRiL19.fasta",
+            "InvRiL19.fasta"
         ),
     ]
     skipper_repo_path = "/projects/ps-yeolab4/software/skipper/8674296/bin/skipper/"
@@ -215,7 +215,7 @@ class SkipperConfigManifest(models.Model):
     gene_set_distance = models.CharField(max_length=200, choices=gene_set_distance_choices, default=gene_set_distance_choices[0])
 
     uninformative_read = models.IntegerField(default=3-default_informative_read)
-    barcode_file = models.CharField(max_length=120, choices=barcode_choices, blank=True)
+    barcode_file = models.CharField(max_length=120, choices=barcode_choices, default="/projects/ps-yeolab4/software/skipper/8674296/examples/InvRiL19.fasta")
     fastqs = models.CharField(max_length=200, blank=True)
 
 
