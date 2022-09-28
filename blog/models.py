@@ -129,8 +129,8 @@ class SkipperConfigManifest(models.Model):
     ]
     partition_choices = [
         (
-            os.path.join(skipper_repo_path, "annotations/gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.bed.gz"),
-            "gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.bed.gz"
+            "/projects/ps-yeolab3/eboyle/encode/pipeline/05_20220720/gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.features.tsv.gz",
+            "gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.features.tsv.gz"
         )
     ]
     feature_choices = [
@@ -238,19 +238,19 @@ class SkipperConfigManifest(models.Model):
 
 class Fastq(models.Model):
 
-    experiment = models.CharField(max_length=200, default="EXPERIMENT")
-    sample = models.CharField(max_length=200, default="SAMPLE")
-    cells = models.CharField(max_length=200, default="")
+    experiment = models.CharField(max_length=50, default="EXPERIMENT")
+    sample = models.CharField(max_length=50, default="SAMPLE")
+    cells = models.CharField(max_length=50, default="")
 
-    ip_title = models.CharField(max_length=100, default="IP")
-    ip_path = models.CharField(max_length=100, default="")
-    ip_adapter_path = models.CharField(max_length=90, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
+    ip_title = models.CharField(max_length=50, default="IP")
+    ip_path = models.CharField(max_length=255, default="")
+    ip_adapter_path = models.CharField(max_length=255, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
     ip_rep = models.IntegerField(default=1)
     ip_complete = models.BooleanField()
 
-    sminput_title = models.CharField(max_length=100, default="SMINPUT")
-    sminput_path = models.CharField(max_length=100, default="")
-    sminput_adapter_path = models.CharField(max_length=90, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
+    sminput_title = models.CharField(max_length=50, default="SMINPUT")
+    sminput_path = models.CharField(max_length=255, default="")
+    sminput_adapter_path = models.CharField(max_length=255, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
     sminput_rep = models.IntegerField(default=1)
     sminput_complete = models.BooleanField()
 

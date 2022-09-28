@@ -40,7 +40,7 @@ SECRET_KEY = str(os.getenv('SECRET'))
 
 DEBUG = True if os.getenv('PLATFORM', 'DEV') != 'PRD' else False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'metadata-db-test.us-west-1.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'metadata-db-test.us-west-1.elasticbeanstalk.com', '172.31.17.181', 'brian-yee.com']
 
 
 def get_linux_ec2_private_ip():
