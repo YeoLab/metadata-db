@@ -204,7 +204,7 @@ class SkipperConfigManifest(models.Model):
 
     star_dir = models.CharField(max_length=90, choices=star_choices, default=star_choices[0])
     r_exe = models.CharField(max_length=200, default=os.path.join(skipper_env_path, 'bin', 'Rscript'))
-    umicollapse_dir = models.CharField(max_length=200, default=os.path.join(skipper_repo_path, 'UMICollapse'))
+    umicollapse_dir = models.CharField(max_length=200, default=os.path.join(exe_dir_path, 'UMICollapse'))
     java_exe = models.CharField(max_length=200, default=os.path.join(skipper_env_path, 'bin', 'java'))
     genome = models.CharField(max_length=200, choices=genome_choices, default=genome_choices[0])
     chrom_sizes = models.CharField(max_length=200, choices=chrom_choices, default=chrom_choices[0][0])
