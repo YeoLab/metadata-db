@@ -129,14 +129,13 @@ class SkipperConfigManifest(models.Model):
     ]
     partition_choices = [
         (
-            "/projects/ps-yeolab3/eboyle/encode/pipeline/05_20220720/gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.features.tsv.gz",
-            "gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.features.tsv.gz"
+            os.path.join(skipper_repo_path, "annotations/gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.bed.gz"),
+            "gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.bed.gz"
         )
     ]
     feature_choices = [
         (
-            os.path.join(skipper_repo_path,
-                         "annotations/gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.features.tsv.gz"),
+            os.path.join(skipper_repo_path, "annotations/gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.features.tsv.gz"),
             "gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.features.tsv.gz"
         )
     ]
@@ -172,7 +171,7 @@ class SkipperConfigManifest(models.Model):
     ]
     repeat_table_choices = [
         (
-            "/projects/ps-yeolab3/eboyle/encode/pipeline/05_20220720/repeatmasker.grch38.tsv.gz",
+            os.path.join(skipper_repo_path, "annotations/repeatmasker.grch38.tsv.gz"),
             "repeatmasker.grch38.tsv.gz"
         )
     ]

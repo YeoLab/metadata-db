@@ -202,7 +202,6 @@ def SKIPPER_form(request):
             sample = request.POST.get("sample")
             ip_rep = request.POST.get("ip_rep")
             sminput_rep = request.POST.get("sminput_rep")
-
             Fastq.objects.create(
                 experiment=experiment,
                 sample=sample,
