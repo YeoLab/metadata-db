@@ -102,7 +102,7 @@ class SkipperConfigManifest(models.Model):
             "InvRiL19.fasta"
         ),
     ]
-    skipper_repo_path = "/projects/ps-yeolab4/software/skipper/8674296/bin/skipper/"
+    skipper_repo_path = "/projects/ps-yeolab4/software/skipper/8674296/bin/skipper"
     skipper_env_path = '/projects/ps-yeolab4/software/yeolabconda3/envs/skipper-8674296/'
 
     gff_choices = [
@@ -198,7 +198,9 @@ class SkipperConfigManifest(models.Model):
     overdispersion_mode = models.CharField(max_length=200, choices=overdispersion_choices, default=overdispersion_choices[0])
     conda_dir = models.CharField(max_length=200, default="", blank=True)
     tool_dir = models.CharField(max_length=200, default=os.path.join(skipper_repo_path, "tools"))
-    exe_dir = models.CharField(max_length=200, default=os.path.dirname(skipper_repo_path))
+
+    exe_dir_path = os.path.dirname(skipper_repo_path) if not skipper_repo_path.endswith('/') else os.path.dirname(skipper_repo_path[:-1])
+    exe_dir = models.CharField(max_length=200, default=exe_dir_path)
 
     star_dir = models.CharField(max_length=90, choices=star_choices, default=star_choices[0])
     r_exe = models.CharField(max_length=200, default=os.path.join(skipper_env_path, 'bin', 'Rscript'))
