@@ -98,24 +98,8 @@ class SkipperManifest(models.Model):
 class SkipperConfigManifest(models.Model):
     barcode_choices = [
         (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta",
+            "/projects/ps-yeolab3/eboyle/encode/pipeline/adapters/InvRiL19.fasta",
             "InvRiL19_adapters.fasta"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA1_adapters.fasta",
-            "InvRNA1_adapters.fasta"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA2_adapters.fasta",
-            "InvRNA2_adapters.fasta"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA3_adapters.fasta",
-            "InvRNA3_adapters.fasta"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA4_adapters.fasta",
-            "InvRNA4_adapters.fasta"
         ),
     ]
     skipper_repo_path = "/projects/ps-yeolab4/software/skipper/8674296/bin/skipper/"
