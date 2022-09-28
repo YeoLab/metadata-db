@@ -13,6 +13,19 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 
+# Your portal credentials for a Globus Auth Flow
+SOCIAL_AUTH_GLOBUS_KEY = os.getenv('GLOBUS_CLIENT_ID', 'GLOBUS_CLIENT_ID_UNSET')
+SOCIAL_AUTH_GLOBUS_SECRET = os.getenv('GLOBUS_CLIENT_SECRET', 'GLOBUS_CLIENT_SECRET_UNSET')
+
+# This is a general Django setting if views need to redirect to login
+# https://docs.djangoproject.com/en/3.2/ref/settings/#login-url
+LOGIN_URL = '/login/globus'
+
+# This dictates which scopes will be requested on each user login
+SOCIAL_AUTH_GLOBUS_SCOPE = [
+    'urn:globus:auth:scope:search.api.globus.org:search',
+]
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,7 +40,7 @@ SECRET_KEY = str(os.getenv('SECRET'))
 
 DEBUG = True if os.getenv('PLATFORM', 'DEV') != 'PRD' else False
 
-ALLOWED_HOSTS = ['127.0.0.1', '54.215.31.138', '172.31.1.44', '*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'metadata-db-test.us-west-1.elasticbeanstalk.com']
 
 
 def get_linux_ec2_private_ip():
@@ -61,6 +74,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blog',
+    'globus_portal_framework',
+    'social_django'
 ]
 
 MIDDLEWARE = [
@@ -71,6 +86,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'globus_portal_framework.middleware.ExpiredTokenMiddleware',
+    'globus_portal_framework.middleware.GlobusAuthExceptionMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -86,6 +104,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'globus_portal_framework.context_processors.globals',
             ],
         },
     },
@@ -115,6 +134,11 @@ else:
             'PORT': os.environ['RDS_PORT'],
         }
     }
+
+AUTHENTICATION_BACKENDS = [
+    'globus_portal_framework.auth.GlobusOpenIdConnect',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
