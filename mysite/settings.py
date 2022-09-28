@@ -44,7 +44,9 @@ ALLOWED_HOSTS = [
     'localhost', '127.0.0.1',
     'metadata-db-test.us-west-1.elasticbeanstalk.com',
     'www.metadata-db-test.us-west-1.elasticbeanstalk.com',
-    '172.31.17.181', 'brian-yee.com']
+    '172.31.17.181', 'brian-yee.com',
+    'metadatadb.brian-yee.com',
+]
 
 
 def get_linux_ec2_private_ip():
