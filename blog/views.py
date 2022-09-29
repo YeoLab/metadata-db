@@ -276,8 +276,8 @@ def skipper_tsv(clip):
                 fastq = Fastq.objects.get(pk=i)
 
                 row = ','.join([
-                    fastq.ip_title,
-                    fastq.ip_title,
+                    fastq.experiment,
+                    fastq.sample,
                     fastq.cells,
                     str(fastq.ip_rep),
                     fastq.sminput_adapter_path,

@@ -14,4 +14,6 @@ urlpatterns = [
     path('post/<int:pk>/edit/', views.post_edit, name='post_edit'),
     path('CLIPPER/', views.CLIP_form, name='CLIP_form'),
     path('SKIPPER/', views.SKIPPER_form, name='SKIPPER_form'),
+    path('clipper/', views.CLIP_form, name='CLIP_form'),
+    path('skipper/', views.SKIPPER_form, name='SKIPPER_form'),
 ]

@@ -1,7 +1,11 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.core.validators import RegexValidator
+
 import os
+
+ALPHANUMERICUNDERSCORE = RegexValidator(r'^[0-9a-zA-Z_]*$', 'Only alphanumeric characters are allowed.')
 
 
 class Post(models.Model):
@@ -102,7 +106,7 @@ class SkipperConfigManifest(models.Model):
             "InvRiL19.fasta"
         ),
     ]
-    skipper_repo_path = "/projects/ps-yeolab4/software/skipper/8674296/bin/skipper/"
+    skipper_repo_path = "/projects/ps-yeolab4/software/skipper/8674296/bin/skipper"
     skipper_env_path = '/projects/ps-yeolab4/software/yeolabconda3/envs/skipper-8674296/'
 
     gff_choices = [
@@ -198,11 +202,13 @@ class SkipperConfigManifest(models.Model):
     overdispersion_mode = models.CharField(max_length=200, choices=overdispersion_choices, default=overdispersion_choices[0])
     conda_dir = models.CharField(max_length=200, default="", blank=True)
     tool_dir = models.CharField(max_length=200, default=os.path.join(skipper_repo_path, "tools"))
-    exe_dir = models.CharField(max_length=200, default=os.path.dirname(skipper_repo_path))
+
+    exe_dir_path = os.path.dirname(skipper_repo_path) if not skipper_repo_path.endswith('/') else os.path.dirname(skipper_repo_path[:-1])
+    exe_dir = models.CharField(max_length=200, default=exe_dir_path)
 
     star_dir = models.CharField(max_length=90, choices=star_choices, default=star_choices[0])
     r_exe = models.CharField(max_length=200, default=os.path.join(skipper_env_path, 'bin', 'Rscript'))
-    umicollapse_dir = models.CharField(max_length=200, default=os.path.join(skipper_repo_path, 'UMICollapse'))
+    umicollapse_dir = models.CharField(max_length=200, default=os.path.join(exe_dir_path, 'UMICollapse'))
     java_exe = models.CharField(max_length=200, default=os.path.join(skipper_env_path, 'bin', 'java'))
     genome = models.CharField(max_length=200, choices=genome_choices, default=genome_choices[0])
     chrom_sizes = models.CharField(max_length=200, choices=chrom_choices, default=chrom_choices[0][0])
@@ -221,17 +227,17 @@ class SkipperConfigManifest(models.Model):
 
 class Fastq(models.Model):
 
-    experiment = models.CharField(max_length=50, default="EXPERIMENT")
-    sample = models.CharField(max_length=50, default="SAMPLE")
-    cells = models.CharField(max_length=50, default="")
+    experiment = models.CharField(max_length=50, default="EXPERIMENT", validators=[ALPHANUMERICUNDERSCORE])
+    sample = models.CharField(max_length=50, default="SAMPLE", validators=[ALPHANUMERICUNDERSCORE])
+    cells = models.CharField(max_length=50, default="", validators=[ALPHANUMERICUNDERSCORE])
 
-    ip_title = models.CharField(max_length=50, default="IP")
+    ip_title = models.CharField(max_length=50, default="IP", validators=[ALPHANUMERICUNDERSCORE])
     ip_path = models.CharField(max_length=255, default="")
     ip_adapter_path = models.CharField(max_length=255, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
     ip_rep = models.IntegerField(default=1)
     ip_complete = models.BooleanField()
 
-    sminput_title = models.CharField(max_length=50, default="SMINPUT")
+    sminput_title = models.CharField(max_length=50, default="SMINPUT", validators=[ALPHANUMERICUNDERSCORE])
     sminput_path = models.CharField(max_length=255, default="")
     sminput_adapter_path = models.CharField(max_length=255, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
     sminput_rep = models.IntegerField(default=1)

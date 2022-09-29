@@ -38,3 +38,6 @@ $RECYCLE.BIN/
 
 # output / test files
 output_yaml/
+
+# install django portal framework outside of pip to workaround django 3 requirements.
+django-globus-portal-framework/

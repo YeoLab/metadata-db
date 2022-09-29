@@ -11,12 +11,12 @@
             <hr>
             <h2>Add new sample (Full paths only)</h2>
             <div class="row">
-                <label for="experiment">Experiment name</label>
-                <div class="col"><input class="form-control" type="text" name="experiment" id="experiment"></div>
-                <label for="sample">Sample name</label>
-                <div class="col"><input class="form-control" type="text" name="sample" id="sample"></div>
-                <label for="cells">Cells</label>
-                <div class="col"><input class="form-control" type="text" name="cells" id="cells"></div>
+                <label for="experiment">Experiment name (alphanumeric or underscores only, no spaces)</label>
+                <div class="col"><input class="form-control" type="text" name="experiment" id="experiment" pattern="[a-zA-Z0-9_]+"></div>
+                <label for="sample">Sample name (alphanumeric or underscores only, no spaces)</label>
+                <div class="col"><input class="form-control" type="text" name="sample" id="sample" pattern="[a-zA-Z0-9_]+"></div>
+                <label for="cells">Cells (alphanumeric or underscores only, no spaces)</label>
+                <div class="col"><input class="form-control" type="text" name="cells" id="cells" pattern="[a-zA-Z0-9_]+"></div>
             </div>
             <div class="row">
                 <div class="col-md">
