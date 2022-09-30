@@ -161,7 +161,7 @@ def CLIP_form(request):
 
 @login_required
 def SKIPPER_form(request):
-    fastq = Fastq.objects.all().order_by('-id')[:20]  # will list the last 20
+    fastq = Fastq.objects.filter(submitter=request.user)
 
     if request.method == 'POST':
         form = SkipperConfigManifestForm(request.POST)
