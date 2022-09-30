@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 # include model we've written in models.py
 # . before models means curr directory or current app
@@ -93,6 +94,7 @@ def post_yaml(post, form):
         documents = yaml.dump(post_dict, file)
 
 
+@login_required
 def CLIP_form(request):
     fastq = Fastq.objects.filter(submitter=request.user)
 
@@ -157,6 +159,7 @@ def CLIP_form(request):
     return render(request, 'blog/CLIP_form.html', {'form': form, 'fastq': fastq})
 
 
+@login_required
 def SKIPPER_form(request):
     fastq = Fastq.objects.all().order_by('-id')[:20]  # will list the last 20
 

@@ -32,7 +32,7 @@ def get_rfm(search_result):
 SEARCH_INDEXES = {
     'perfdata': {
         'name': 'Performance Data',
-        'uuid': '5e83718e-add0-4f06-a00d-577dc78359bc',
+        'uuid': os.getenv('GLOBUS_CLIENT_ID', 'GLOBUS_CLIENT_ID_UNSET'),
         'fields': [
             'perfdata',
             ('remote_file_manifest', get_rfm),
