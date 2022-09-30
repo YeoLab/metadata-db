@@ -41,10 +41,8 @@ SECRET_KEY = str(os.getenv('SECRET'))
 DEBUG = True if os.getenv('PLATFORM', 'DEV') != 'PRD' else False
 
 ALLOWED_HOSTS = [
-    'localhost', '127.0.0.1',
-    'metadata-db-test.us-west-1.elasticbeanstalk.com',
-    'www.metadata-db-test.us-west-1.elasticbeanstalk.com',
-    '172.31.17.181', 'brian-yee.com',
+    'localhost',
+    '127.0.0.1',
     'metadatadb.brian-yee.com',
 ]
 
@@ -79,9 +77,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blog',
+    'form_builder',
     'globus_portal_framework',
-    'social_django'
+    'social_django',
+    'bootstrap_themes',
 ]
 
 MIDDLEWARE = [
