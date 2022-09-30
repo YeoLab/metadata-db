@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 # include model we've written in models.py
 # . before models means curr directory or current app
@@ -93,8 +94,9 @@ def post_yaml(post, form):
         documents = yaml.dump(post_dict, file)
 
 
+@login_required
 def CLIP_form(request):
-    fastq = Fastq.objects.all().order_by('-id')[:20]  # will list the last 20
+    fastq = Fastq.objects.filter(submitter=request.user)
 
     if request.method == 'POST':
         form = CLIPManifestForm(request.POST)
@@ -112,7 +114,6 @@ def CLIP_form(request):
             if form.is_valid():
                 clip = form.save(commit=False)
                 clip.fastqs = ','.join(fastqs)  # fastqs is a CharField, save all fastq ids as str(comma-separated list)
-
                 clip.save()
                 file_data = CLIP_yaml(clip)
                 # set variables to field values
@@ -132,7 +133,9 @@ def CLIP_form(request):
             sample = request.POST.get("sample")
             ip_rep = request.POST.get("ip_rep")
             sminput_rep = request.POST.get("sminput_rep")
+            submitter = request.user
             Fastq.objects.create(
+                submitter=submitter,
                 experiment=experiment,
                 sample=sample,
                 ip_title=sample + "_CLIP_" + ip_rep,
@@ -156,6 +159,7 @@ def CLIP_form(request):
     return render(request, 'blog/CLIP_form.html', {'form': form, 'fastq': fastq})
 
 
+@login_required
 def SKIPPER_form(request):
     fastq = Fastq.objects.all().order_by('-id')[:20]  # will list the last 20
 
@@ -202,7 +206,9 @@ def SKIPPER_form(request):
             sample = request.POST.get("sample")
             ip_rep = request.POST.get("ip_rep")
             sminput_rep = request.POST.get("sminput_rep")
+            submitter = request.user
             Fastq.objects.create(
+                submitter=submitter,
                 experiment=experiment,
                 sample=sample,
                 ip_title=sample + "_CLIP_" + ip_rep,

@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.core.validators import RegexValidator
+from django.contrib.auth.models import User, AnonymousUser
 
 import os
 
@@ -226,7 +227,7 @@ class SkipperConfigManifest(models.Model):
 
 
 class Fastq(models.Model):
-
+    submitter = models.ForeignKey(User, on_delete=models.CASCADE)
     experiment = models.CharField(max_length=50, default="EXPERIMENT", validators=[ALPHANUMERICUNDERSCORE])
     sample = models.CharField(max_length=50, default="SAMPLE", validators=[ALPHANUMERICUNDERSCORE])
     cells = models.CharField(max_length=50, default="", validators=[ALPHANUMERICUNDERSCORE])
