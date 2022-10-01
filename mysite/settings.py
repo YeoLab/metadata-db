@@ -43,9 +43,9 @@ DEBUG = True if os.getenv('PLATFORM', 'DEV') != 'PRD' else False
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'metadatadb.brian-yee.com',
     'pipelines.brian-yee.com',
-    'pipelines.yeolab.com'
+    'pipelines.yeolab.com',
+    'us-west-1.elasticbeanstalk.com',
 ]
 
 

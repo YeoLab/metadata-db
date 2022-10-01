@@ -27,8 +27,9 @@
 
                     <div class="col">
                         <select id="ip_adapter_path" name="ip_adapter_path">
-                        {% for x, y in form.fields.barcode_file.choices %}
-                            <option value="{{ x }}"{% if form.fields.barcode_file.value == x %} selected{% endif %}>{{ y }}</option>
+                        {% get_barcode_choices as barcodes %}
+                        {% for x, y in barcodes %}
+                            <option value="{{ x }}">{{ x }}</option>
                         {% endfor %}
                         </select>
                         <label for="ip_rep">Replicate</label>
@@ -47,8 +48,9 @@
                     <label for="sminput_adapter_path">SMINPUT adapter</label>
                     <div class="col">
                         <select id="sminput_adapter_path" name="sminput_adapter_path">
-                        {% for x, y in form.fields.barcode_file.choices %}
-                            <option value="{{ x }}"{% if form.fields.barcode_file.value == x %} selected{% endif %}>{{ y }}</option>
+                        {% get_barcode_choices as barcodes %}
+                        {% for x, y in barcodes %}
+                            <option value="{{ x }}">{{ x }}</option>
                         {% endfor %}
                         </select>
                         <label for="sminput_rep">Replicate</label>

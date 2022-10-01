@@ -7,28 +7,7 @@ ALPHANUMERICUNDERSCORE = RegexValidator(r'^[0-9a-zA-Z_]*$', 'Only alphanumeric c
 
 
 class CLIPManifest(models.Model):
-    barcode_choices = [
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta",
-            "InvRiL19_adapters.fasta"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA1_adapters.fasta",
-            "InvRNA1_adapters.fasta"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA2_adapters.fasta",
-            "InvRNA2_adapters.fasta"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA3_adapters.fasta",
-            "InvRNA3_adapters.fasta"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA4_adapters.fasta",
-            "InvRNA4_adapters.fasta"
-        ),
-    ]
+
     star_choices = [
         (
             "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/star_2_7_gencode40_sjdb/",
@@ -69,19 +48,14 @@ class CLIPManifest(models.Model):
     # set default: 10 Ns
     umi_pattern = models.CharField(max_length=20, default="NNNNNNNNNN")
     fastqs = models.CharField(max_length=200, blank=True)
-    barcode_file = models.CharField(max_length=120, choices=barcode_choices, blank=True)
+
 
     def __str__(self):
         return self.dataset
 
 
 class SkipperConfigManifest(models.Model):
-    barcode_choices = [
-        (
-            "/projects/ps-yeolab4/software/skipper/8674296/examples/InvRiL19.fasta",
-            "InvRiL19.fasta"
-        ),
-    ]
+
     skipper_repo_path = "/projects/ps-yeolab4/software/skipper/8674296/bin/skipper"
     skipper_env_path = '/projects/ps-yeolab4/software/yeolabconda3/envs/skipper-8674296/'
 
@@ -197,11 +171,54 @@ class SkipperConfigManifest(models.Model):
     gene_set_distance = models.CharField(max_length=200, choices=gene_set_distance_choices, default=gene_set_distance_choices[0])
 
     uninformative_read = models.IntegerField(default=3-default_informative_read)
-    barcode_file = models.CharField(max_length=120, choices=barcode_choices, default="/projects/ps-yeolab4/software/skipper/8674296/examples/InvRiL19.fasta")
     fastqs = models.CharField(max_length=200, blank=True)
 
 
 class Fastq(models.Model):
+    barcode_choices = [
+        (
+            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta",
+            "InvRiL19_adapters.fasta (eCLIP)"
+        ),
+        (
+            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA1_adapters.fasta",
+            "InvRNA1_adapters.fasta (eCLIP)"
+        ),
+        (
+            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA2_adapters.fasta",
+            "InvRNA2_adapters.fasta (eCLIP)"
+        ),
+        (
+            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA3_adapters.fasta",
+            "InvRNA3_adapters.fasta (eCLIP)"
+        ),
+        (
+            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA4_adapters.fasta",
+            "InvRNA4_adapters.fasta (eCLIP)"
+        ),
+        (
+            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA5_adapters.fasta",
+            "InvRNA5_adapters.fasta (eCLIP)"
+        ),
+        (
+            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA6_adapters.fasta",
+            "InvRNA6_adapters.fasta (eCLIP)"
+        ),
+        (
+            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA7_adapters.fasta",
+            "InvRNA7_adapters.fasta (eCLIP)"
+        ),
+        (
+            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA8_adapters.fasta",
+            "InvRNA8_adapters.fasta (eCLIP)"
+        ),
+        (
+            "/projects/ps-yeolab4/software/skipper/8674296/examples/InvRiL19.fasta",
+            "InvRiL19.fasta (SKIPPER)"
+        ),
+
+    ]
+
     submitter = models.ForeignKey(User, on_delete=models.CASCADE)
     experiment = models.CharField(max_length=50, default="EXPERIMENT", validators=[ALPHANUMERICUNDERSCORE])
     sample = models.CharField(max_length=50, default="SAMPLE", validators=[ALPHANUMERICUNDERSCORE])
@@ -209,13 +226,13 @@ class Fastq(models.Model):
 
     ip_title = models.CharField(max_length=50, default="IP", validators=[ALPHANUMERICUNDERSCORE])
     ip_path = models.CharField(max_length=255, default="")
-    ip_adapter_path = models.CharField(max_length=255, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
+    ip_adapter_path = models.CharField(max_length=255, choices=barcode_choices, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
     ip_rep = models.IntegerField(default=1)
     ip_complete = models.BooleanField()
 
     sminput_title = models.CharField(max_length=50, default="SMINPUT", validators=[ALPHANUMERICUNDERSCORE])
     sminput_path = models.CharField(max_length=255, default="")
-    sminput_adapter_path = models.CharField(max_length=255, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
+    sminput_adapter_path = models.CharField(max_length=255, choices=barcode_choices, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
     sminput_rep = models.IntegerField(default=1)
     sminput_complete = models.BooleanField()
 

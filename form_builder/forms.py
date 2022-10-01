@@ -14,7 +14,6 @@ class CLIPManifestForm(forms.ModelForm):
             'description',
             'species',
             'chrom_sizes',
-            'barcode_file',
             'speciesGenomeDir',
             'repeatElementGenomeDir',
             'blacklist_file',
@@ -24,7 +23,6 @@ class CLIPManifestForm(forms.ModelForm):
         # TODO: find appropriate widget for each field.
         widgets = {
             'fastqs': HiddenInput,  # hide field since fastqs will be added using separate input
-            'barcode_file': HiddenInput
         }
 
 
@@ -57,7 +55,6 @@ class SkipperConfigManifestForm(forms.ModelForm):
             'gene_set_distance',
             'uninformative_read',
             'fastqs',
-            'barcode_file',
         )
         # TODO: find appropriate widget for each field.
         widgets = {
@@ -65,7 +62,6 @@ class SkipperConfigManifestForm(forms.ModelForm):
             'repo_path': HiddenInput,
             'informative_read': HiddenInput,  # hide field since fastqs will be added using separate input
             'uninformative_read': HiddenInput,
-            'barcode_file': HiddenInput,
             'conda_dir': HiddenInput,
             'tool_dir': HiddenInput,
             'exe_dir': HiddenInput,
