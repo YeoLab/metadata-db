@@ -1,0 +1,30 @@
+{% extends 'form_builder/base.html' %}
+{% block content %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-3">Pipeline form builder</h1>
+            <p>A Helpful utility for generating manifest forms for our pipelines and tools.</p>
+            <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
+        </div>
+    </div>
+
+    <!-- Example row of columns -->
+    <div class="row">
+    <div class="col-md-4">
+        <h2>Skipper</h2>
+        <p>Skip the peaks and expose RNA-binding in CLIP data.</p>
+        <p><a href="https://github.com/yeolab/skipper">Github</a></p>
+        <p><a class="btn btn-secondary" href="/skipper" role="button">Build forms &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>eCLIP (CLIPper)</h2>
+        <p>A pipeline designed to identify genomic locations (peaks) of RNA-bound proteins.</p>
+        <p><a href="https://github.com/yeolab/eclip">Github</a></p>
+        <p><a class="btn btn-secondary" href="/clipper" role="button">Build Form &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Coming soon...</h2>
+        <p>Coming soon...</p>
+        <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+    </div>
+{% endblock %}
