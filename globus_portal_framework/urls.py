@@ -93,7 +93,7 @@ register_custom_index('index', list(get_setting('SEARCH_INDEXES').keys()))
 # search detail for viewing info about a single search result
 search_urlpatterns = [
     path('<index:index>/about/', search_about, name='search-about'),
-    path('<index:index>/', search, name='search'),
+    # path('<index:index>/', search, name='search'),
     path('<index:index>/detail-preview/<subject>/',
          detail_preview, name='detail-preview'),
     path('<index:index>/detail-preview/<subject>/<endpoint>/<path:url_path>/',
@@ -103,7 +103,7 @@ search_urlpatterns = [
     path('<index:index>/detail/<subject>/', detail, name='detail'),
     path('allowed-groups/', allowed_groups, name='allowed-groups'),
     # Globus search portal. Provides default url '/'.
-    path('', index_selection, name='index-selection'),
+    # path('', index_selection, name='index-selection'),
 ]
 
 urlpatterns = [
@@ -111,7 +111,7 @@ urlpatterns = [
     path('api/proxy/', restricted_endpoint_proxy_stream,
          name='restricted_endpoint_proxy_stream'),
     path('logout/', logout, name='logout'),
-    path('', include(search_urlpatterns)),
+    # path('', include(search_urlpatterns)),
 ]
 
 
@@ -120,5 +120,5 @@ if getattr(settings, 'GLOBUS_PORTAL_FRAMEWORK_DEVELOPMENT_APP', False):
     urlpatterns.extend([
         path('admin', admin.site.urls),
         path('', include('social_django.urls', namespace='social')),
-        path('', include('globus_portal_framework.urls_debugging'))
+        # path('', include('globus_portal_framework.urls_debugging'))
     ])
