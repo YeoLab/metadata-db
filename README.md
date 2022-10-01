@@ -55,7 +55,6 @@ TLDR: fix deployment using either the log files or by poking around with ```eb s
 
 - In Route53, lookup and select a valid domain name and purchase one.
 - In elastic beanstalk console under 'environments', copy the URL (*.elasticbeanstalk.com)
-![shown here](img/Screen Shot 2022-10-01 at 9.26.23 AM.png)
 
 - Once you have a valid domain, you will need to point the domain to your EB instance. 
     - Under Route53 -> Hosted zones -> DOMAIN, create a CNAME record (name = your domain name, value = elastic beanstalk URL)
