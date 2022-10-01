@@ -50,3 +50,28 @@ TLDR: fix deployment using either the log files or by poking around with ```eb s
 ##### Relevant log files (inside eb instance):
 - ```/var/log/cp_log``` (tracks issues related to the Django application)
 - ```/var/log/cfn-init-cmd.log``` (tracks issues related to eb deployment)
+
+# Steps for adding a SSL-protected domain:
+
+- In Route53, lookup and select a valid domain name and purchase one.
+- In elastic beanstalk console under 'environments', copy the URL (*.elasticbeanstalk.com)
+![shown here](img/Screen Shot 2022-10-01 at 9.26.23 AM.png)
+
+- Once you have a valid domain, you will need to point the domain to your EB instance. 
+    - Under Route53 -> Hosted zones -> DOMAIN, create a CNAME record (name = your domain name, value = elastic beanstalk URL)
+
+- Now, add SSL protection (HTTPS)
+    - Go to the AWS Certificate Manager (ACM) and request a new (public) certificate
+    - Add your domain and select a validation method. If you choose [DNS validation](https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html), you will need to add another CNAME record. This proves that you own the domain.
+    - Once verified, a certificate will be granted. Then, go to your elastic beanstalk environment console, and under
+    
+        Elastic Beanstalk -> Environments -> Your Environment -> Configuration -> Load Balancer:
+        
+        Add a new HTTPS listener. 
+        
+        Attach the appropriate certificate corresponding to your domain. 
+        
+        443 is typically the default port to use.
+        
+        And as of 09/22 the recommended ELB Policy 
+        is [ELBSecurityPolicy-2016-08](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html)
