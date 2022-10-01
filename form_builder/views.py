@@ -71,7 +71,7 @@ def CLIP_form(request):
                     Fastq.objects.filter(id=int(key.split('delete_fqid_')[1])).delete()
     else:
         form = CLIPManifestForm()
-    return render(request, 'blog/CLIP_form.html', {'form': form, 'fastq': fastq})
+    return render(request, 'form_builder/CLIP_form.html', {'form': form, 'fastq': fastq})
 
 
 @login_required
@@ -144,7 +144,7 @@ def SKIPPER_form(request):
                     Fastq.objects.filter(id=int(key.split('delete_fqid_')[1])).delete()
     else:
         form = SkipperConfigManifestForm()
-    return render(request, 'blog/SKIPPER_form.html', {'form': form, 'fastq': fastq})
+    return render(request, 'form_builder/SKIPPER_form.html', {'form': form, 'fastq': fastq})
 
 
 def CLIP_yaml(clip):
@@ -221,5 +221,5 @@ def skipper_config(clip):
 
 def index_view(request):
     context = {'LOGIN_URL': settings.LOGIN_URL}
-    template = 'blog/index.html'
+    template = 'form_builder/index.html'
     return render(request, template, context)
