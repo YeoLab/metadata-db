@@ -10,6 +10,7 @@ register = template.Library()
 def settings_value(name):
     return getattr(settings, name, "")
 
+
 @register.simple_tag
 def get_barcode_choices():
     return Fastq.barcode_choices
