@@ -110,3 +110,5 @@ class FastqSkipperForm(forms.ModelForm):
             'ip_adapter_path': Select,
             'sminput_adapter_path': Select,
         }
+    def clean(self):
+        super(FastqSkipperForm)

@@ -1,0 +1,35 @@
+<div class="row">
+    <h2>Added fastqs</h2>
+    <h6>Check samples will be added to manifest, unchecked samples will be excluded.</h6>
+    <table class="table">
+    <tr>
+        <th style="width:10%;">Add to manifest</th>
+        <th style="width:10%;">Delete from database</th>
+        <th style="width:10%;">Name</th>
+        <th style="width:100%;">Path</th>
+    </tr>
+    {% for fastq in fastq %}
+    <tr>
+        <td style="width:10%;vertical-align : middle;text-align:center;" rowspan="4"><input class="mx-2" type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true"></td>
+        <td style="width:10%;vertical-align : middle;" rowspan="4">
+
+            <button type="submit" name="delete_fqid_{{fastq.id}}" class="btn btn-danger">Delete</button>
+        </td>
+        <td style="width:10%;" >IP fastq path (Replicate <b>{{fastq.ip_rep}}</b>)</td>
+        <td><input style="width:100%;" disabled id="ip_path" value="{{fastq.ip_path}}"></input></td>
+    </tr>
+    <tr>
+        <td style="width:10%;" >IP adapter path</td>
+        <td><input style="width:100%;" disabled id="IP_display_adapter_path" value="{{fastq.ip_adapter_path}}"></input></td>
+    </tr>
+    <tr>
+        <td style="width:10%;" >SMInput path (Replicate <b>{{fastq.sminput_rep}}</b>)</td>
+        <td><input style="width:100%;" disabled id="sminput_display_path" value="{{fastq.sminput_path}}"></input></td>
+    </tr>
+    <tr>
+        <td style="width:10%;" >SMInput adapter path</td>
+        <td><input style="width:100%;" disabled id="sminput_display_adapter_path" value="{{fastq.sminput_adapter_path}}"></input></td>
+    </tr>
+    {% endfor %}
+    </table>
+</div>

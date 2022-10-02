@@ -1,0 +1,51 @@
+{% load template_tags %}
+
+<div class="col-md">
+    <h4>Add CLIP sample</h4>
+    <label for="ip_rep">CLIP Replicate</label>
+    <div class="col">
+        <select id="ip_rep" name="ip_rep">
+            <option hidden disabled selected value> -- select an option -- </option>
+        {% for i in '0123456789'|make_list %}
+            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+        {% endfor %}
+        </select>
+    </div>
+    <label for="ip_fastq_path">CLIP fastq path</label>
+    <div class="col"><input class="form-control" type="text" name="ip_fastq_path" id="ip_fastq_path" maxlength="255"></div>
+    <label for="ip_adapter_path">CLIP adapter</label>
+    <div class="col">
+        <select id="ip_adapter_path" name="ip_adapter_path">
+            <option hidden disabled selected value> -- select an option -- </option>
+        {% get_barcode_choices as barcodes %}
+        {% for x, y in barcodes %}
+            <option value="{{ x }}">{{ x }}</option>
+        {% endfor %}
+        </select>
+    </div>
+
+</div>
+<div class="col-md">
+    <h4>Add SIZE MATCHED INPUT sample</h4>
+    <label for="sminput_rep">SMINPUT Replicate</label>
+    <div class="col">
+        <select id="sminput_rep" name="sminput_rep">
+        <option hidden disabled selected value> -- select an option -- </option>
+    {% for i in '0123456789'|make_list %}
+        <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+    {% endfor %}
+        </select>
+    </div>
+    <label for="sminput_fastq_path">SMINPUT fastq path</label>
+    <div class="col"><input class="form-control" type="text" name="sminput_fastq_path" id="sminput_fastq_path" maxlength="255"></div>
+    <label for="sminput_adapter_path">SMINPUT adapter</label>
+    <div class="col">
+        <select id="sminput_adapter_path" name="sminput_adapter_path">
+            <option hidden disabled selected value> -- select an option -- </option>
+        {% get_barcode_choices as barcodes %}
+        {% for x, y in barcodes %}
+            <option value="{{ x }}">{{ x }}</option>
+        {% endfor %}
+        </select>
+    </div>
+</div>

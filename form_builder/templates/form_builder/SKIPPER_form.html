@@ -1,7 +1,7 @@
 {% extends 'form_builder/base.html' %}
 {% load template_tags %}
 {% block content %}
-
+    {% include 'form_builder/messages.html' %}
     <form method="POST" class="post-form">{% csrf_token %}
         <div class="container">
             <h1>SKIPPER Config and Manifest form builder</h1>
@@ -12,56 +12,15 @@
             <hr>
             <h2>Add new sample (Full paths only)</h2>
             <div class="row">
-                <label for="experiment">Experiment name</label>
-                <div class="col"><input class="form-control" type="text" name="experiment" id="experiment"></div>
-                <label for="sample">Sample name</label>
-                <div class="col"><input class="form-control" type="text" name="sample" id="sample"></div>
-                <label for="cells">Cells</label>
-                <div class="col"><input class="form-control" type="text" name="cells" id="cells"></div>
+                <label for="experiment">Experiment name (alphanumeric or underscores only, no spaces)</label>
+                <div class="col"><input class="form-control" type="text" name="experiment" id="experiment" pattern="[a-zA-Z0-9_]+"></div>
+                <label for="sample">Sample name (alphanumeric or underscores only, no spaces)</label>
+                <div class="col"><input class="form-control" type="text" name="sample" id="sample" pattern="[a-zA-Z0-9_]+"></div>
+                <label for="cells">Cells (alphanumeric or underscores only, no spaces)</label>
+                <div class="col"><input class="form-control" type="text" name="cells" id="cells" pattern="[a-zA-Z0-9_]+"></div>
             </div>
             <div class="row">
-                <div class="col-md">
-                    <h4>Add CLIP sample</h4>
-                    <label for="ip_fastq_path">CLIP fastq path</label>
-                    <div class="col"><input class="form-control" type="text" name="ip_fastq_path" id="ip_fastq_path" maxlength="255"></div>
-                    <label for="ip_adapter_path">CLIP adapter</label>
-
-                    <div class="col">
-                        <select id="ip_adapter_path" name="ip_adapter_path">
-                        {% get_barcode_choices as barcodes %}
-                        {% for x, y in barcodes %}
-                            <option value="{{ x }}">{{ x }}</option>
-                        {% endfor %}
-                        </select>
-                        <label for="ip_rep">Replicate</label>
-                        <select id="ip_rep" name="ip_rep">Replicate
-                        {% for i in '0123456789'|make_list %}
-                            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
-                        {% endfor %}
-                        </select>
-                    </div>
-
-                </div>
-                <div class="col-md">
-                    <h4>Add SIZE MATCHED INPUT sample</h4>
-                    <label for="sminput_fastq_path">SMINPUT fastq path</label>
-                    <div class="col"><input class="form-control" type="text" name="sminput_fastq_path" id="sminput_fastq_path" maxlength="255"></div>
-                    <label for="sminput_adapter_path">SMINPUT adapter</label>
-                    <div class="col">
-                        <select id="sminput_adapter_path" name="sminput_adapter_path">
-                        {% get_barcode_choices as barcodes %}
-                        {% for x, y in barcodes %}
-                            <option value="{{ x }}">{{ x }}</option>
-                        {% endfor %}
-                        </select>
-                        <label for="sminput_rep">Replicate</label>
-                        <select id="sminput_rep" name="sminput_rep">Replicate
-                        {% for i in '0123456789'|make_list %}
-                            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
-                        {% endfor %}
-                        </select>
-                    </div>
-                </div>
+                {% include 'form_builder/fastq_submit.html' %}
             </div>
             <div class="row my-4">
                 <div class="col-md">
@@ -72,21 +31,7 @@
 
         <div class="container my-4">
             <hr>
-            <div class="row">
-                <h2>Added fastqs</h2>
-                <h6>Check samples will be added to manifest, unchecked samples will be excluded.</h6>
-                <ul>
-                {% for fastq in fastq %}
-                    <li><input class="mx-2" type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true">{{fastq.ip_title}} over {{fastq.sminput_title}}
-                    <div>{{fastq.ip_path}}</div>
-                    <div>{{fastq.sminput_path}}</div>
-                    <div><button type="submit" name="delete_fqid_{{fastq.id}}" class="btn btn-danger">Delete</button></div>
-                    </li>
-                {% endfor %}
-                </ul>
-
-
-            </div>
+            {% include 'form_builder/fastq_display.html' %}
             <button type="submit" name="save_config" value="save_config">Save and Download CONFIG</button>
             <button type="submit" name="save_manifest" value="save_manifest">Save and Download MANIFEST</button>
             <!-- <button type="submit" class="save btn btn-secondary">Submit</button> -->
