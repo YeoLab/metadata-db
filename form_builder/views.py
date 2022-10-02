@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 # include model we've written in models.py
 # . before models means curr directory or current app
+from django.contrib import messages
+
 from mysite import settings
 from .models import Fastq
 from django.shortcuts import render
@@ -112,32 +114,58 @@ def SKIPPER_form(request):
                 response['Content-Disposition'] = f'attachment; filename="{f}"'
                 return response
         elif request.POST.get("newItem"):
-            ip_fastq_path = request.POST.get("ip_fastq_path")
-            ip_adapter_path = request.POST.get("ip_adapter_path")
-            sminput_fastq_path = request.POST.get("sminput_fastq_path")
-            sminput_adapter_path = request.POST.get("sminput_adapter_path")
-            cells = request.POST.get("cells")
-            experiment = request.POST.get("experiment")
-            sample = request.POST.get("sample")
-            ip_rep = request.POST.get("ip_rep")
-            sminput_rep = request.POST.get("sminput_rep")
+            ip_fastq_path = request.POST.get("ip_fastq_path", None)
+            ip_adapter_path = request.POST.get("ip_adapter_path", None)
+            sminput_fastq_path = request.POST.get("sminput_fastq_path", None)
+            sminput_adapter_path = request.POST.get("sminput_adapter_path", None)
+            cells = request.POST.get("cells", None)
+            experiment = request.POST.get("experiment", None)
+            sample = request.POST.get("sample", None)
+            ip_rep = request.POST.get("ip_rep", None)
+            sminput_rep = request.POST.get("sminput_rep", None)
             submitter = request.user
-            Fastq.objects.create(
-                submitter=submitter,
-                experiment=experiment,
-                sample=sample,
-                ip_title=sample + "_CLIP_" + ip_rep,
-                ip_rep=ip_rep,
-                ip_path=ip_fastq_path,
-                ip_adapter_path=ip_adapter_path,
-                ip_complete=False,
-                cells=cells,
-                sminput_title=sample + "_SMINPUT_" + sminput_rep,
-                sminput_rep=sminput_rep,
-                sminput_path=sminput_fastq_path,
-                sminput_adapter_path=sminput_adapter_path,
-                sminput_complete=False
-            )
+
+            if ip_fastq_path is None or ip_adapter_path is None or ip_rep is None or \
+                sminput_fastq_path is None or sminput_adapter_path is None or sminput_rep is None or \
+                cells is None or experiment is None or sample is None or submitter is None:
+                messages.error(
+                    request,
+                    f'Failed to add sample {sample} to the database (are all fields completed?)'
+                )
+            elif len(Fastq.objects.filter(sample=sample, ip_rep=ip_rep, sminput_rep=sminput_rep, submitter=request.user)) > 0:
+                messages.error(
+                    request,
+                    f'IP Replicate {ip_rep} and Size-matched Input Replicate {sminput_rep} for \
+                    sample {sample} already exists! Refusing to add to database.'
+                )
+
+            else:
+                if len(Fastq.objects.filter(sample=sample, ip_rep=ip_rep, submitter=request.user)) > 0:
+                    messages.warning(
+                        request,
+                        f'Warning - {sample} IP Replicate {ip_rep} exists in database (but with a different Size-matched Input replicate).'
+                    )
+                if len(Fastq.objects.filter(sample=sample, sminput_rep=sminput_rep, submitter=request.user)) > 0:
+                    messages.warning(
+                        request,
+                        f'Warning - {sample} Size-matched Input Replicate {sminput_rep} exists in database (but with a different IP replicate).'
+                    )
+                Fastq.objects.create(
+                    submitter=submitter,
+                    experiment=experiment,
+                    sample=sample,
+                    ip_title=sample + "_CLIP_" + ip_rep,
+                    ip_rep=ip_rep,
+                    ip_path=ip_fastq_path,
+                    ip_adapter_path=ip_adapter_path,
+                    ip_complete=False,
+                    cells=cells,
+                    sminput_title=sample + "_SMINPUT_" + sminput_rep,
+                    sminput_rep=sminput_rep,
+                    sminput_path=sminput_fastq_path,
+                    sminput_adapter_path=sminput_adapter_path,
+                    sminput_complete=False
+                )
         else:
             for key in request.POST.keys():
                 if key.startswith('delete_fqid_'):
