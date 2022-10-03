@@ -37,4 +37,31 @@
             <!-- <button type="submit" class="save btn btn-secondary">Submit</button> -->
         </div>
     </form>
+    <div class="container">
+        <h1>Running the pipeline on TSCC [TL;DR]</h1>
+
+        <h5>On your computer, transfer the downloaded BOTH files to TSCC and login:</h5>
+<pre><code>
+scp manifest.csv username@tscc-dm1.sdsc.edu:/oasis/tscc/scratch/username/manifest.csv
+scp Skipper_config.py username@tscc-dm1.sdsc.edu:/oasis/tscc/scratch/username/Skipper_config.py
+ssh username@tscc-login12.sdsc.edu
+</code></pre>
+        <h5>On TSCC:</h5>
+<pre><code>
+screen -x                                                  # or just "screen" if you have no active screens
+qsub -I -q home-yeo -l nodes=1:ppn=1 -l walltime=24:00:00  # request interactive compute node for running
+cd /oasis/tscc/scratch/username/                           # navigate to folder where this manifest exists
+module load skipper/8674296                                # load the "skipper" module
+cp $SKIPPER_HOME/bin/skipper/Skipper.py ./                 # copy the most up-to-date Skipper Snakefile to your current directory
+snakemake -kps Skipper.py -w 15 -j 30 \
+    --cluster \
+    "qsub -e {params.error_file} \
+    -o {params.out_file} \
+    -l walltime={params.run_time} \
+    -l nodes=1:ppn={threads} \
+    -q home-yeo"  # kick off the pipeline
+
+</code></pre>
+
+    </div>
 {% endblock %}

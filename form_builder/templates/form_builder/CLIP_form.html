@@ -36,4 +36,24 @@
             <!-- <button type="submit" class="save btn btn-secondary">Submit</button> -->
         </div>
     </form>
+    <div class="container">
+        <h1>Running the pipeline on TSCC [TL;DR]</h1>
+
+        <h5>On your computer, transfer the downloaded file to TSCC and login:</h5>
+<pre><code>
+scp manifest.yaml username@tscc-dm1.sdsc.edu:/oasis/tscc/scratch/username/manifest.yaml
+ssh username@tscc-login12.sdsc.edu
+</code></pre>
+        <h5>On TSCC:</h5>
+<pre><code>
+screen -x                                                  # or just "screen" if you have no active screens
+qsub -I -q home-yeo -l nodes=1:ppn=1 -l walltime=48:00:00  # request interactive compute node for running
+cd /oasis/tscc/scratch/username/                           # navigate to folder where this manifest exists
+chmod +x ./this_manifest.yaml                              # make this manifest "executable"
+module load eclip/0.7.1                                    # load the "eclip" module
+./this_manifest.yaml                                       # kick off the pipeline
+
+</code></pre>
+
+    </div>
 {% endblock %}
