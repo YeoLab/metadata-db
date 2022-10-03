@@ -63,19 +63,55 @@ class SkipperConfigManifest(models.Model):
         (
             os.path.join(skipper_repo_path, "annotations/gencode.v38.annotation.k562_totalrna.gt1.gff3.gz"),
             "gencode.v38.annotation.k562_totalrna.gt1.gff3.gz"
-        )
+        ),
+        (
+            os.path.join(skipper_repo_path, "annotations/gencode.v38.annotation.hepg2_totalrna.gt1.gff3.gz"),
+            "gencode.v38.annotation.hepg2_totalrna.gt1.gff3.gz"
+        ),
     ]
     partition_choices = [
         (
-            os.path.join(skipper_repo_path, "annotations/gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.bed.gz"),
+            os.path.join(skipper_repo_path,
+                         "annotations/gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.bed.gz"),
             "gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.bed.gz"
+        ),
+        (
+            os.path.join(skipper_repo_path,
+                         "annotations/gencode.v38.annotation.hepg2_totalrna.gt1.tiled_partition.bed.gz"),
+            "gencode.v38.annotation.hepg2_totalrna.gt1.tiled_partition.bed.gz"
+        ),
+        (
+            os.path.join(skipper_repo_path,
+                         "annotations/gencode.v38.annotation.hek293t.gt1.tiled_partition.bed.gz"),
+            "gencode.v38.annotation.hek293t.gt1.tiled_partition.bed.gz"
+        ),
+        (
+            os.path.join(skipper_repo_path,
+                         "annotations/gencode.v41.annotation.tiled_partition.bed.gz"),
+            "gencode.v41.annotation.tiled_partition.bed.gz"
         )
     ]
     feature_choices = [
         (
-            os.path.join(skipper_repo_path, "annotations/gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.features.tsv.gz"),
+            os.path.join(skipper_repo_path,
+                         "annotations/gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.features.tsv.gz"),
             "gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.features.tsv.gz"
-        )
+        ),
+        (
+            os.path.join(skipper_repo_path,
+                         "annotations/gencode.v38.annotation.hepg2_totalrna.gt1.tiled_partition.features.tsv.gz"),
+            "gencode.v38.annotation.hepg2_totalrna.gt1.tiled_partition.features.tsv.gz"
+        ),
+        (
+            os.path.join(skipper_repo_path,
+                         "annotations/gencode.v38.annotation.hepg2_totalrna.gt1.tiled_partition.features.tsv.gz"),
+            "gencode.v38.annotation.hepg2_totalrna.gt1.tiled_partition.features.tsv.gz"
+        ),
+        (
+            os.path.join(skipper_repo_path,
+                         "annotations/gencode.v41.annotation.tiled_partition.features.tsv.gz"),
+            "gencode.v41.annotation.tiled_partition.features.tsv.gz"
+        ),
     ]
     accession_rankings_choices = [
         (
