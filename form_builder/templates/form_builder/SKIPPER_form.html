@@ -59,7 +59,7 @@ snakemake -kps Skipper.py -w 15 -j 30 \
     -o {params.out_file} \
     -l walltime={params.run_time} \
     -l nodes=1:ppn={threads} \
-    -q home-yeo"  # kick off the pipeline
+    -q home-yeo -V"  # kick off the pipeline
 
 </code></pre>
 
