@@ -33,6 +33,9 @@ Steps for deployment using Elastic Beanstalk:
     - This config file allows us to run custom commands during the deployment process. 
     - Importantly, we will need to migrate changes made to the database
     - See django.config -> container_commands -> 01_migrate for an example
+
+#### Create RDS Database before deployment
+    - In the AWS console, under your environment go to 'Configuration'. Scroll down to Database and press the 'Edit' button. Choose all defaults and create a username and password (this will be used in the future in settings.py)
     
 # Deployment
 - Deploying the main code:
