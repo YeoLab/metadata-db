@@ -47,6 +47,8 @@ ALLOWED_HOSTS = [
     'pipelines.brian-yee.com',
     'pipelines.yeolab.com',
     'us-west-1.elasticbeanstalk.com',
+    '172.31.26.246',
+    'metadata-db-dev.us-west-1.elasticbeanstalk.com',
 ]
 
 
