@@ -11,7 +11,6 @@ Django==4.1.1
 django-admin==2.0.1
 django-excel-base==1.0.4
 django-excel-response2==3.0.2
-django-globus-portal-framework==0.4.5
 django-six==1.0.4
 ecdsa==0.18.0
 Flask==2.2.2
