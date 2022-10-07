@@ -42,8 +42,10 @@ def CLIP_form(request):
 
         elif request.POST.get("newItem"):
             ip_fastq_path = request.POST.get("ip_fastq_path")
+            print(ip_fastq_path)
             ip_adapter_path = request.POST.get("ip_adapter_path")
             sminput_fastq_path = request.POST.get("sminput_fastq_path")
+            print(sminput_fastq_path)
             sminput_adapter_path = request.POST.get("sminput_adapter_path")
             cells = request.POST.get("cells")
             experiment = request.POST.get("experiment")
@@ -51,22 +53,31 @@ def CLIP_form(request):
             ip_rep = request.POST.get("ip_rep")
             sminput_rep = request.POST.get("sminput_rep")
             submitter = request.user
-            Fastq.objects.create(
-                submitter=submitter,
-                experiment=experiment,
-                sample=sample,
-                ip_title=sample + "_CLIP_" + ip_rep,
-                ip_rep=ip_rep,
-                ip_path=ip_fastq_path,
-                ip_adapter_path=ip_adapter_path,
-                ip_complete=False,
-                cells=cells,
-                sminput_title=sample + "_SMINPUT_" + sminput_rep,
-                sminput_rep=sminput_rep,
-                sminput_path=sminput_fastq_path,
-                sminput_adapter_path=sminput_adapter_path,
-                sminput_complete=False
-            )
+
+            # test for duplicate fastq paths
+            if len(Fastq.objects.filter(ip_path=ip_fastq_path, sminput_path=sminput_fastq_path)) > 0:
+                print("True")
+                messages.error(
+                    request,
+                    f' Fastq path: {ip_fastq_path} and {sminput_fastq_path} already exists! Refusing to add to database.'
+                )
+            else: 
+                Fastq.objects.create(
+                    submitter=submitter,
+                    experiment=experiment,
+                    sample=sample,
+                    ip_title=sample + "_CLIP_" + ip_rep,
+                    ip_rep=ip_rep,
+                    ip_path=ip_fastq_path,
+                    ip_adapter_path=ip_adapter_path,
+                    ip_complete=False,
+                    cells=cells,
+                    sminput_title=sample + "_SMINPUT_" + sminput_rep,
+                    sminput_rep=sminput_rep,
+                    sminput_path=sminput_fastq_path,
+                    sminput_adapter_path=sminput_adapter_path,
+                    sminput_complete=False
+                )
         else:
             for key in request.POST.keys():
                 if key.startswith('delete_fqid_'):
@@ -125,6 +136,11 @@ def SKIPPER_form(request):
             sminput_rep = request.POST.get("sminput_rep", None)
             submitter = request.user
 
+            if len(Fastq.objects.filter(sample=sample, ip_path=ip_fastq_path, sminput_path=sminput_fastq_path)) > 0:
+                messages.error(
+                    request,
+                    f' Fastq path: {ip_fastq_path} and {sminput_fastq_path} already exists! Refusing to add to database.'
+                )
             if ip_fastq_path is None or ip_adapter_path is None or ip_rep is None or \
                 sminput_fastq_path is None or sminput_adapter_path is None or sminput_rep is None or \
                 cells is None or experiment is None or sample is None or submitter is None:
@@ -138,7 +154,6 @@ def SKIPPER_form(request):
                     f'IP Replicate {ip_rep} and Size-matched Input Replicate {sminput_rep} for \
                     sample {sample} already exists! Refusing to add to database.'
                 )
-
             else:
                 if len(Fastq.objects.filter(sample=sample, ip_rep=ip_rep, submitter=request.user)) > 0:
                     messages.warning(
