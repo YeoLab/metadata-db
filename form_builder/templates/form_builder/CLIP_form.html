@@ -1,7 +1,7 @@
 {% extends 'form_builder/base.html' %}
 {% load template_tags %}
 {% block content %}
-
+    {% include 'form_builder/messages.html' %}
     <form method="POST" class="post-form">{% csrf_token %}
         <div class="container">
             <h1>eCLIP (CLIPper) Form Builder</h1>
