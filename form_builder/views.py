@@ -2,7 +2,6 @@ from django.contrib.auth.decorators import login_required
 # include model we've written in models.py
 # . before models means curr directory or current app
 from django.contrib import messages
-
 from mysite import settings
 from .models import Fastq
 from django.shortcuts import render
@@ -42,10 +41,8 @@ def CLIP_form(request):
 
         elif request.POST.get("newItem"):
             ip_fastq_path = request.POST.get("ip_fastq_path")
-            print(ip_fastq_path)
             ip_adapter_path = request.POST.get("ip_adapter_path")
             sminput_fastq_path = request.POST.get("sminput_fastq_path")
-            print(sminput_fastq_path)
             sminput_adapter_path = request.POST.get("sminput_adapter_path")
             cells = request.POST.get("cells")
             experiment = request.POST.get("experiment")
@@ -56,7 +53,6 @@ def CLIP_form(request):
 
             # test for duplicate fastq paths
             if len(Fastq.objects.filter(ip_path=ip_fastq_path, sminput_path=sminput_fastq_path)) > 0:
-                print("True")
                 messages.error(
                     request,
                     f' Fastq path: {ip_fastq_path} and {sminput_fastq_path} already exists! Refusing to add to database.'
