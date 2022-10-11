@@ -50,6 +50,7 @@ ALLOWED_HOSTS = [
     '172.31.9.147',
     'metadata-db-dev.us-west-1.elasticbeanstalk.com',
     'metadata-db-dev.brian-yee.com',
+    '172.31.17.181'
 ]
 
 

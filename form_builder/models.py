@@ -56,8 +56,8 @@ class CLIPManifest(models.Model):
 
 class SkipperConfigManifest(models.Model):
 
-    skipper_repo_path = "/projects/ps-yeolab4/software/skipper/8674296/bin/skipper"
-    skipper_env_path = '/projects/ps-yeolab4/software/yeolabconda3/envs/skipper-8674296/'
+    skipper_repo_path = "/projects/ps-yeolab4/software/skipper/1.0.0/bin/skipper"
+    skipper_env_path = '/projects/ps-yeolab4/software/yeolabconda3/envs/skipper-1.0.0/'
 
     gff_choices = [
         (
