@@ -77,3 +77,6 @@ TLDR: fix deployment using either the log files or by poking around with ```eb s
         
         And as of 09/22 the recommended ELB Policy 
         is [ELBSecurityPolicy-2016-08](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html)
+
+# Note for testing locally
+- replace host with "localhost"
