@@ -67,7 +67,7 @@ def CLIP_form(request):
                     f' Fastq path: {ip_fastq_path} and {sminput_fastq_path} already exists! Refusing to add to database.'
                 )
 
-            # test for duplicate rep
+            # test for duplicate reps for same sample
             elif len(Fastq.objects.filter(sample=sample, ip_rep=ip_rep, sminput_rep=sminput_rep, submitter=request.user)) > 0:
                 messages.error(
                     request,
