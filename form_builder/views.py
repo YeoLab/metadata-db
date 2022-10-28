@@ -213,6 +213,9 @@ def SKIPPER_form(request):
         form = SkipperConfigManifestForm()
     return render(request, 'form_builder/SKIPPER_form.html', {'form': form, 'fastq': fastq})
 
+def rnaseq_form(request):
+    return render(request, 'form_builder/rnaseq_form.html')
+
 
 def CLIP_yaml(clip):
     # initialize new YAML file by initializing dict
