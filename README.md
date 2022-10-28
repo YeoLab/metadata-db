@@ -80,3 +80,4 @@ TLDR: fix deployment using either the log files or by poking around with ```eb s
 
 # Note for testing locally
 - replace host with "localhost"
+- source file with secrets
