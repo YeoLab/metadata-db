@@ -221,17 +221,38 @@ def SKIPPER_form(request):
     return render(request, 'form_builder/SKIPPER_form.html', {'form': form, 'fastq': fastq})
 
 def rnaseq_form(request):
+    fastq = Fastq.objects.filter(submitter=request.user)
     # submit form with filled out fields
     if request.method == 'POST':
         form = RnaseqFastqForm(request.POST)
         if form.is_valid():
-            rna = form.save(commit=False)
-            return redirect('/rnaseq')
+            rnaseq = form.save(commit=False)
+            rnaseq.save()
+            # generate yaml file
+            file_data = rnaseq_yaml(rnaseq)
+            response = HttpResponse(file_data, content_type='application/text charset=utf-8')
+            f = request.POST.get('dataset', 'manifest')
+            # download attachment
+            response['Content-Disposition'] = f'attachment; filename="{f}.yaml"'
+            return response
     # blank form
     else:
         form = RnaseqFastqForm()
     return render(request, 'form_builder/rnaseq_form.html', {'form': form})
 
+def rnaseq_yaml(rnaseq):
+    field_dict = dict()
+    field_dict['reads'] = []
+    for field, value in rnaseq.__dict__.items():
+        if field == 'fastqs':
+            pass
+        elif field in ['speciesGenomeDir', 'repeatElementGenomeDir']:
+            field_dict[field] = {'class': 'Directory', 'path': value}
+        elif field in ['speciesChromSizes', 'b_adapters']:
+            field_dict[field] = {'class': 'File', 'path': value}
+        elif field != '_state' and field != 'barcode_file' and field != 'id':
+            field_dict[field] = value
+    return "#!/usr/bin/env RNASEQ_singleend\n" + yaml.dump(field_dict,default_flow_style=False)
 
 def CLIP_yaml(clip):
     # initialize new YAML file by initializing dict

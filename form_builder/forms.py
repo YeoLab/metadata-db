@@ -118,7 +118,7 @@ class RnaseqFastqForm(forms.ModelForm):
         model = RnaseqFastq
         fields = (
             'species',
-            'chrom_sizes',
+            'speciesChromSizes',
             'speciesGenomeDir',
             'repeatElementGenomeDir',
             'b_adapters',
