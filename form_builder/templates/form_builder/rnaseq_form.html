@@ -2,4 +2,9 @@
 {% load template_tags %}
 {% block content %}
     {% include 'form_builder/messages.html' %}
+    <form method="POST" class="post-form">{% csrf_token %}
+        <div class="container">
+            <h1>RNAseq Form Builder</h1>
+            {{ form.as_p }} <!-- main form -->
+        </div>
 {% endblock %}

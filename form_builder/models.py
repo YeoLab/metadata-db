@@ -274,3 +274,40 @@ class Fastq(models.Model):
 
     def __str__(self):
         return self.ip_title
+
+    
+class RnaseqFastq(models.Model):
+    species_choices = [('hg19', 'hg19'), ('mm10', 'mm10'), ('GRCh38', 'GRCh38')]
+    chrom_choices = [
+        ('inputs/mm10.chrom.sizes', 'mm10.chrom.sizes'), 
+        ('inputs/hg19.chrom.sizes', 'hg19.chrom.sizes'), 
+        ('inputs/GRCh38.chrom.sizes', 'GRCh38.chrom.sizes')
+    ]
+    species_genome_choices = [
+        ('inputs/star_2_4_0i_gencode19_sjdb', 'star_2_4_0i_gencode19_sjdb'),
+        ('inputs/star_2_4_0i_gencode24_sjdb', 'star_2_4_0i_gencode24_sjdb'),
+        ('inputs/star_2_4_0i_gencode29_sjdb', 'star_2_4_0i_gencode29_sjdb'),
+        ('inputs/star_2_4_0i_mm10_sjdb', 'star_2_4_0i_mm10_sjdb')
+    ]
+    repeat_choices = [
+        ('inputs/homo_sapiens_repbase_v2', 'homo_sapiens_repbase_v2'),
+        ('inputs/mus_musculus_repbase_v2', 'mus_musculus_repbase_v2'),
+        ('inputs/rat_rattus_repbase_v2', 'rat_rattus_repbase_v2')
+    ]
+    adapter_choices = [
+        ('inputs/adapters.fasta', 'adapters.fasta')
+    ]
+
+    direction_choices = [
+        ('r', 'r'), 
+        ('f', 'f')
+    ]
+
+    species = models.CharField(max_length=20, choices=species_choices)
+    chrom_sizes = models.CharField(max_length=120, default="inputs/hg19.chrom.sizes")
+    speciesGenomeDir = models.CharField(max_length=90, choices=species_genome_choices)
+    repeatElementGenomeDir = models.CharField(max_length=120, choices=repeat_choices)
+    b_adapters = models.CharField(max_length=120, choices=adapter_choices, default="inputs/adapters.fasta")
+    direction = models.CharField(max_length = 2, choices=direction_choices, default="r")
+
+
