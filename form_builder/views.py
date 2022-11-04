@@ -217,7 +217,7 @@ def rnaseq_form(request):
         form = RnaseqFastqForm(request.POST)
         if form.is_valid():
             rna = form.save(commit=False)
-            return redirect('/')
+            return redirect('/rnaseq')
     else:
         form = RnaseqFastqForm()
     return render(request, 'form_builder/rnaseq_form.html', {'form': form})

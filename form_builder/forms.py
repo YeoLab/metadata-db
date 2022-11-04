@@ -122,4 +122,5 @@ class RnaseqFastqForm(forms.ModelForm):
             'speciesGenomeDir',
             'repeatElementGenomeDir',
             'b_adapters',
+            'direction',
         )
