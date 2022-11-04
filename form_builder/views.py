@@ -13,33 +13,39 @@ from django.http import HttpResponse
 @login_required
 def CLIP_form(request):
     fastq = Fastq.objects.filter(submitter=request.user)
-
+    # submitting filled out form
     if request.method == 'POST':
         form = CLIPManifestForm(request.POST)
+        # downloading yaml file
         if request.POST.get("save"):
             fastqs = []
             for key in request.POST.keys():
                 try:
+                    # find added fastqs
                     if key.startswith('fqid_'):  # TODO: refactor, hacky
                         Fastq.objects.get(pk=request.POST.get(key))
+                        # append to fastq array
                         fastqs.append(request.POST.get(key))
                 except Exception as e:
                     print(e)  # TODO: log
                     pass
-
+            
+            # filled out form fields
             if form.is_valid():
                 clip = form.save(commit=False)
                 clip.fastqs = ','.join(fastqs)  # fastqs is a CharField, save all fastq ids as str(comma-separated list)
                 clip.save()
+                # generate yaml file
                 file_data = CLIP_yaml(clip)
-                # set variables to field values
-                # return redirect('/CLIP/')
                 response = HttpResponse(file_data, content_type='application/text charset=utf-8')
                 f = request.POST.get('dataset', 'manifest')
+                # download attachment
                 response['Content-Disposition'] = f'attachment; filename="{f}.yaml"'
                 return response
 
+        # adding new fastq
         elif request.POST.get("newItem"):
+            # set variables to html form values
             ip_fastq_path = request.POST.get("ip_fastq_path")
             ip_adapter_path = request.POST.get("ip_adapter_path")
             sminput_fastq_path = request.POST.get("sminput_fastq_path")
@@ -102,10 +108,12 @@ def CLIP_form(request):
                     sminput_adapter_path=sminput_adapter_path,
                     sminput_complete=False
                 )
+        # deleting fastq
         else:
             for key in request.POST.keys():
                 if key.startswith('delete_fqid_'):
                     Fastq.objects.filter(id=int(key.split('delete_fqid_')[1])).delete()
+    # blank form
     else:
         form = CLIPManifestForm()
     return render(request, 'form_builder/CLIP_form.html', {'form': form, 'fastq': fastq})
@@ -213,11 +221,13 @@ def SKIPPER_form(request):
     return render(request, 'form_builder/SKIPPER_form.html', {'form': form, 'fastq': fastq})
 
 def rnaseq_form(request):
+    # submit form with filled out fields
     if request.method == 'POST':
         form = RnaseqFastqForm(request.POST)
         if form.is_valid():
             rna = form.save(commit=False)
             return redirect('/rnaseq')
+    # blank form
     else:
         form = RnaseqFastqForm()
     return render(request, 'form_builder/rnaseq_form.html', {'form': form})
