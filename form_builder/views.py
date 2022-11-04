@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from mysite import settings
 from .models import Fastq
-from django.shortcuts import render
-from .forms import CLIPManifestForm, SkipperConfigManifestForm
+from django.shortcuts import render, redirect
+from .forms import CLIPManifestForm, SkipperConfigManifestForm, RnaseqFastqForm
 import yaml
 from django.http import HttpResponse
 
@@ -110,7 +110,6 @@ def CLIP_form(request):
         form = CLIPManifestForm()
     return render(request, 'form_builder/CLIP_form.html', {'form': form, 'fastq': fastq})
 
-
 @login_required
 def SKIPPER_form(request):
     fastq = Fastq.objects.filter(submitter=request.user)
@@ -214,7 +213,14 @@ def SKIPPER_form(request):
     return render(request, 'form_builder/SKIPPER_form.html', {'form': form, 'fastq': fastq})
 
 def rnaseq_form(request):
-    return render(request, 'form_builder/rnaseq_form.html')
+    if request.method == 'POST':
+        form = RnaseqFastqForm(request.POST)
+        if form.is_valid():
+            rna = form.save(commit=False)
+            return redirect('/')
+    else:
+        form = RnaseqFastqForm()
+    return render(request, 'form_builder/rnaseq_form.html', {'form': form})
 
 
 def CLIP_yaml(clip):

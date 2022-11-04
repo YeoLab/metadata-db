@@ -304,7 +304,7 @@ class RnaseqFastq(models.Model):
     ]
 
     species = models.CharField(max_length=20, choices=species_choices)
-    chrom_sizes = models.CharField(max_length=120, default="inputs/hg19.chrom.sizes")
+    chrom_sizes = models.CharField(max_length=200, choices=chrom_choices)
     speciesGenomeDir = models.CharField(max_length=90, choices=species_genome_choices)
     repeatElementGenomeDir = models.CharField(max_length=120, choices=repeat_choices)
     b_adapters = models.CharField(max_length=120, choices=adapter_choices, default="inputs/adapters.fasta")
