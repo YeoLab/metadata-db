@@ -3,7 +3,7 @@ from django import forms
 # import Post model
 from django.forms import HiddenInput, Select
 
-from .models import CLIPManifest, SkipperConfigManifest, Fastq, RnaseqFastq
+from .models import CLIPManifest, SkipperConfigManifest, Fastq, Rnaseq
 
 
 class CLIPManifestForm(forms.ModelForm):
@@ -115,7 +115,7 @@ class FastqSkipperForm(forms.ModelForm):
 
 class RnaseqFastqForm(forms.ModelForm):
     class Meta:
-        model = RnaseqFastq
+        model = Rnaseq
         fields = (
             'species',
             'speciesChromSizes',

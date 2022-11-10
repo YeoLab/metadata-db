@@ -276,7 +276,7 @@ class Fastq(models.Model):
         return self.ip_title
 
     
-class RnaseqFastq(models.Model):
+class Rnaseq(models.Model):
     species_choices = [('hg19', 'hg19'), ('mm10', 'mm10'), ('GRCh38', 'GRCh38')]
     chrom_choices = [
         ('inputs/mm10.chrom.sizes', 'mm10.chrom.sizes'), 
