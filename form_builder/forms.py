@@ -113,7 +113,19 @@ class FastqSkipperForm(forms.ModelForm):
     def clean(self):
         super(FastqSkipperForm)
 
-class RnaseqFastqForm(forms.ModelForm):
+class RnaseqSEForm(forms.ModelForm):
+    class Meta:
+        model = Rnaseq
+        fields = (
+            'species',
+            'speciesChromSizes',
+            'speciesGenomeDir',
+            'repeatElementGenomeDir',
+            'b_adapters',
+            'direction',
+        )
+
+class RnaseqPEForm(forms.ModelForm):
     class Meta:
         model = Rnaseq
         fields = (

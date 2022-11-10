@@ -211,6 +211,13 @@ class SkipperConfigManifest(models.Model):
 
 
 class Fastq(models.Model):
+    form_choices = [
+        ("RnaseqSE", "RnaseqSE"),
+        ("RnaseqPE", "RnaseqPE"),
+        ("CLIP", "CLIP"),
+        ("SKIPPER", "SKIPPER"),
+    ]
+
     barcode_choices = [
         (
             "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta",
@@ -256,6 +263,7 @@ class Fastq(models.Model):
     ]
 
     submitter = models.ForeignKey(User, on_delete=models.CASCADE)
+    form = models.CharField(max_length=20, choices=form_choices)
     experiment = models.CharField(max_length=50, default="EXPERIMENT", validators=[ALPHANUMERICUNDERSCORE])
     sample = models.CharField(max_length=50, default="SAMPLE", validators=[ALPHANUMERICUNDERSCORE])
     cells = models.CharField(max_length=50, default="", validators=[ALPHANUMERICUNDERSCORE])
@@ -276,7 +284,7 @@ class Fastq(models.Model):
         return self.ip_title
 
     
-class Rnaseq(models.Model):
+class RnaseqSE(models.Model):
     species_choices = [('hg19', 'hg19'), ('mm10', 'mm10'), ('GRCh38', 'GRCh38')]
     chrom_choices = [
         ('inputs/mm10.chrom.sizes', 'mm10.chrom.sizes'), 
@@ -309,5 +317,41 @@ class Rnaseq(models.Model):
     repeatElementGenomeDir = models.CharField(max_length=120, choices=repeat_choices)
     b_adapters = models.CharField(max_length=120, choices=adapter_choices)
     direction = models.CharField(max_length = 2, choices=direction_choices, default="r")
+    fastqs = models.CharField(max_length=200, blank=True)
+
+class RnaseqPE(models.Model):
+    species_choices = [('hg19', 'hg19'), ('mm10', 'mm10'), ('GRCh38', 'GRCh38')]
+    chrom_choices = [
+        ('inputs/mm10.chrom.sizes', 'mm10.chrom.sizes'), 
+        ('inputs/hg19.chrom.sizes', 'hg19.chrom.sizes'), 
+        ('inputs/GRCh38.chrom.sizes', 'GRCh38.chrom.sizes')
+    ]
+    species_genome_choices = [
+        ('inputs/star_2_4_0i_gencode19_sjdb', 'star_2_4_0i_gencode19_sjdb'),
+        ('inputs/star_2_4_0i_gencode24_sjdb', 'star_2_4_0i_gencode24_sjdb'),
+        ('inputs/star_2_4_0i_gencode29_sjdb', 'star_2_4_0i_gencode29_sjdb'),
+        ('inputs/star_2_4_0i_mm10_sjdb', 'star_2_4_0i_mm10_sjdb')
+    ]
+    repeat_choices = [
+        ('inputs/homo_sapiens_repbase_v2', 'homo_sapiens_repbase_v2'),
+        ('inputs/mus_musculus_repbase_v2', 'mus_musculus_repbase_v2'),
+        ('inputs/rat_rattus_repbase_v2', 'rat_rattus_repbase_v2')
+    ]
+    adapter_choices = [
+        ('inputs/adapters.fasta', 'adapters.fasta')
+    ]
+
+    direction_choices = [
+        ('r', 'r'), 
+        ('f', 'f')
+    ]
+
+    species = models.CharField(max_length=20, choices=species_choices)
+    speciesChromSizes = models.CharField(max_length=200, choices=chrom_choices)
+    speciesGenomeDir = models.CharField(max_length=90, choices=species_genome_choices)
+    repeatElementGenomeDir = models.CharField(max_length=120, choices=repeat_choices)
+    b_adapters = models.CharField(max_length=120, choices=adapter_choices)
+    direction = models.CharField(max_length = 2, choices=direction_choices, default="r")
+    fastqs = models.CharField(max_length=200, blank=True)
 
 

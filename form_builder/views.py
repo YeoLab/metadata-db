@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from mysite import settings
 from .models import Fastq
-from django.shortcuts import render, redirect
-from .forms import CLIPManifestForm, SkipperConfigManifestForm, RnaseqFastqForm
+from django.shortcuts import render
+from .forms import CLIPManifestForm, SkipperConfigManifestForm, RnaseqSEForm, RnaseqPEForm
 import yaml
 from django.http import HttpResponse
 
@@ -94,6 +94,7 @@ def CLIP_form(request):
                     )
                 Fastq.objects.create(
                     submitter=submitter,
+                    form="CLIP",
                     experiment=experiment,
                     sample=sample,
                     ip_title=sample + "_CLIP_" + ip_rep,
@@ -198,6 +199,7 @@ def SKIPPER_form(request):
                     )
                 Fastq.objects.create(
                     submitter=submitter,
+                    form="SKIPPER",
                     experiment=experiment,
                     sample=sample,
                     ip_title=sample + "_CLIP_" + ip_rep,
@@ -220,25 +222,77 @@ def SKIPPER_form(request):
         form = SkipperConfigManifestForm()
     return render(request, 'form_builder/SKIPPER_form.html', {'form': form, 'fastq': fastq})
 
-def rnaseq_form(request):
-    fastq = Fastq.objects.filter(submitter=request.user)
+def rnaseqSE_form(request):
+    fastq = Fastq.objects.filter(submitter=request.user, form="RnaseqSE")
     # submit form with filled out fields
     if request.method == 'POST':
-        form = RnaseqFastqForm(request.POST)
-        if form.is_valid():
-            rnaseq = form.save(commit=False)
-            rnaseq.save()
-            # generate yaml file
-            file_data = rnaseq_yaml(rnaseq)
-            response = HttpResponse(file_data, content_type='application/text charset=utf-8')
-            f = request.POST.get('dataset', 'manifest')
-            # download attachment
-            response['Content-Disposition'] = f'attachment; filename="{f}.yaml"'
-            return response
+        form = RnaseqSEForm(request.POST)
+        # downloading yaml file
+        if request.POST.get("save"):
+            fastqs = []
+            for key in request.POST.keys():
+                try:
+                    # find added fastqs 
+                    if key.startswith('fqid_'):
+                        Fastq.objects.get(pk=request.POST.get(key))
+                        # append to fastq array
+                        fastqs.append(request.POST.get(key))
+                except Exception as e:
+                    print(e)
+                    pass
+
+            # filled out form fields
+            if form.is_valid():
+                rnaseq = form.save(commit=False)
+                rnaseq.fastqs = ','.join(fastqs)
+                rnaseq.save()
+                # generate yaml file
+                file_data = rnaseq_yaml(rnaseq)
+                response = HttpResponse(file_data, content_type='application/text charset=utf-8')
+                f = request.POST.get('dataset', 'manifest')
+                # download attachment
+                response['Content-Disposition'] = f'attachment; filename="{f}.yaml"'
+                return response
     # blank form
     else:
-        form = RnaseqFastqForm()
-    return render(request, 'form_builder/rnaseq_form.html', {'form': form})
+        form = RnaseqSEForm()
+    return render(request, 'form_builder/rnaseqSE_form.html', {'form': form})
+
+def rnaseqPE_form(request):
+    fastq = Fastq.objects.filter(submitter=request.user, form="RnaseqPE")
+    # submit form with filled out fields
+    if request.method == 'POST':
+        form = RnaseqPEForm(request.POST)
+        # downloading yaml file
+        if request.POST.get("save"):
+            fastqs = []
+            for key in request.POST.keys():
+                try:
+                    # find added fastqs 
+                    if key.startswith('fqid_'):
+                        Fastq.objects.get(pk=request.POST.get(key))
+                        # append to fastq array
+                        fastqs.append(request.POST.get(key))
+                except Exception as e:
+                    print(e)
+                    pass
+
+            # filled out form fields
+            if form.is_valid():
+                rnaseq = form.save(commit=False)
+                rnaseq.fastqs = ','.join(fastqs)
+                rnaseq.save()
+                # generate yaml file
+                file_data = rnaseq_yaml(rnaseq)
+                response = HttpResponse(file_data, content_type='application/text charset=utf-8')
+                f = request.POST.get('dataset', 'manifest')
+                # download attachment
+                response['Content-Disposition'] = f'attachment; filename="{f}.yaml"'
+                return response
+    # blank form
+    else:
+        form = RnaseqPEForm()
+    return render(request, 'form_builder/rnaseqPE_form.html', {'form': form})
 
 def rnaseq_yaml(rnaseq):
     field_dict = dict()
