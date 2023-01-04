@@ -9,6 +9,12 @@ def make_CLIP_form(form, request):
     If download CLIPPER button is clicked, generates list of FASTQs, 
     and yaml file is downloaded onto the page. If adding sample, creates a new 
     FASTQ object. Otherwise, deletes FASTQ object.
+    Args:
+        form: CLIPManifestForm
+        request: HttpRequest
+
+    Returns:
+        response: HttpResponse
     '''
     if request.POST.get("save"):        # "Save and Download (CLIPper)" button
         fastqs = []
@@ -59,6 +65,12 @@ def make_SKIPPER_form(form, request):
     and csv file is downloaded onto the page. If download config button is 
     clicked, will download a 'Skipper_config.py file'. If adding sample, 
     creates a new FASTQ object. Otherwise, deletes FASTQ object.
+    Args:
+        form: SkipperConfigManifestForm
+        request: HttpRequest
+
+    Returns:
+        response: HttpResponse
     '''
     if request.POST.get("save_manifest"):   # "Save and Download MANIFEST"
         fastqs = []
@@ -81,6 +93,7 @@ def make_SKIPPER_form(form, request):
             f = request.POST.get('manifest', 'manifest.csv')
             response['Content-Disposition'] = f'attachment; filename="{f}"'
             return response
+
     elif request.POST.get("save_config"):   # "Save and Download CONFIG"
         if form.is_valid():
             clip = form.save(commit=False)
@@ -91,6 +104,7 @@ def make_SKIPPER_form(form, request):
             f = 'Skipper_config.py'
             response['Content-Disposition'] = f'attachment; filename="{f}"'
             return response
+
     elif request.POST.get("newItem"):       # "Add Sample" button
         ip_fastq_path = request.POST.get("ip_fastq_path", None)
         ip_adapter_path = request.POST.get("ip_adapter_path", None)
@@ -119,6 +133,21 @@ def make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
     Checks for valid FASTQs. Will output a message popup if fields are invalid 
     or incomplete or duplicates exist. For valid FASTQs, will create a FASTQ 
     Object.
+    Args:
+        ip_fastq_path: string
+        ip_adapter_path: string
+        ip_rep: string
+        sminput_fastq_path: string
+        sminput_adapter_path: string
+        sminput_rep: string
+        cells: string
+        experiment: string
+        sample: string
+        submitter: string
+        request: HttpRequest
+
+    Returns:
+
     '''
     # complete fields
     if ip_fastq_path is None or ip_adapter_path is None or ip_rep is None or \
@@ -192,6 +221,11 @@ def make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
 def CLIP_yaml(clip):
     '''
     Create a dictionary to generate YAML from CLIP form
+    Args:
+        clip: CLIPManifestForm
+
+    Returns:
+        string
     '''
     field_dict = dict()
     field_dict['samples'] = []
@@ -222,6 +256,11 @@ def CLIP_yaml(clip):
 def skipper_tsv(clip):
     '''
     Create TSV of SKIPPER form
+    Args:
+        clip: SkipperConfigManifestForm
+
+    Returns:
+        rows: string
     '''
     rows = ','.join([
         'Experiment', 'Sample', 'Cells',
@@ -251,6 +290,11 @@ def skipper_tsv(clip):
 def skipper_config(clip):
     '''
     Create CONFIG from SKIPper form
+    Args:
+        clip: SkipperConfigManifestForm
+
+    Returns:
+        config_string: string
     '''
     config_string = ""
     for field, value in clip.__dict__.items():
