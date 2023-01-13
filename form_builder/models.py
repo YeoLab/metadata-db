@@ -2,53 +2,57 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 import os
+import yaml
 
 ALPHANUMERICUNDERSCORE = RegexValidator(r'^[0-9a-zA-Z_]*$', 'Only alphanumeric characters are allowed.')
 
 
-class CLIPManifest(models.Model):
+with open('form_builder/refs/refs.yaml', 'r') as stream:
+    try:
+        REFS = yaml.safe_load(stream)
+    except yaml.YAMLError as exc:
+        REFS = {}
 
-    star_choices = [
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/star_2_7_gencode40_sjdb/",
-            "star_2_7_gencode40_sjdb/ (GRCh38)"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/star_2_7_6a_gencode19_sjdb/",
-            "star_2_7_6a_gencode19_sjdb/ (hg19)"
-        ),
-    ]
+
+def get_refs_choices(key, refs=REFS):
+    """
+    Returns a list of choices (tuples) according to a dictionary (refs)
+    Args:
+        refs: dictionary
+        key: string
+
+    Returns:
+
+    """
+    choices = []
+    if key in refs.keys():
+        for ref in refs[key]:
+            for label, value in ref.items():
+                choices.append((value, label))
+    return choices
+
+
+class CLIPManifest(models.Model):
+    species_choices = get_refs_choices('species_choices')
+    repeat_choices = get_refs_choices('repeat_choices')
+    star_choices = get_refs_choices('star_choices')
+
     chrom_choices = []
     for tuple in star_choices:
         chrom_choices.append((os.path.join(tuple[0], 'chrNameLength.txt'), tuple[1] + " (must match genome)"))
-    repeat_choices = [
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/star_2_7_homo_sapiens_repbase_fixed_v2",
-            "star_2_7_homo_sapiens_repbase_fixed_v2"
-        ),
-        (
-            "/projects/ps-yeolab3/bay001/annotations/RepBase18.05/star_2_7_mus_musculus_repbase_fixed_v2",
-            "star_2_7_mus_musculus_repbase_fixed_v2"
-        )
-    ]
-    species_choices = [('hg19', 'hg19'), ('GRCh38_v40', 'GRCh38_v40')]
-    exclusion_choices = [
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.0/examples/inputs/eCLIP_blacklistregions.hg38liftover.bed.fixed.bed",
-            "eCLIP_blacklistregions.hg38liftover.bed.fixed.bed"
-        )
-    ]
+
+    exclusion_choices = get_refs_choices('exclusion_choices')
+
     dataset = models.CharField(max_length=20, blank=True)
     description = models.CharField(max_length=200, blank=True)
-    species = models.CharField(max_length=20, choices=species_choices, default="GRCh38_v40")
-    repeatElementGenomeDir = models.CharField(max_length=120, choices=repeat_choices, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/star_2_7_homo_sapiens_repbase_fixed_v2")
-    speciesGenomeDir = models.CharField(max_length=90, choices=star_choices, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/star_2_7_gencode40_sjdb/")
-    chrom_sizes = models.CharField(max_length=120, choices=chrom_choices, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/star_2_7_gencode40_sjdb/chrNameLength.txt")
-    blacklist_file = models.CharField(max_length=120, choices=exclusion_choices, default="/projects/ps-yeolab4/software/eclip/0.7.0/examples/inputs/eCLIP_blacklistregions.hg38liftover.bed.fixed.bed")
+    species = models.CharField(max_length=20, choices=species_choices, default=species_choices[0])
+    repeatElementGenomeDir = models.CharField(max_length=120, choices=repeat_choices, default=repeat_choices[0])
+    speciesGenomeDir = models.CharField(max_length=90, choices=star_choices, default=star_choices[0])
+    chrom_sizes = models.CharField(max_length=120, choices=chrom_choices, default=chrom_choices[0])
+    blacklist_file = models.CharField(max_length=120, choices=exclusion_choices, default=exclusion_choices[0])
     # set default: 10 Ns
     umi_pattern = models.CharField(max_length=20, default="NNNNNNNNNN")
     fastqs = models.CharField(max_length=200, blank=True)
-
 
     def __str__(self):
         return self.dataset
@@ -56,125 +60,29 @@ class CLIPManifest(models.Model):
 
 class SkipperConfigManifest(models.Model):
 
-    skipper_repo_path = "/projects/ps-yeolab4/software/skipper/1.0.0/bin/skipper"
-    skipper_env_path = '/projects/ps-yeolab4/software/yeolabconda3/envs/skipper-1.0.0/'
+    gff_choices = get_refs_choices("gff_choices")
+    partition_choices = get_refs_choices("partition_choices")
 
-    gff_choices = [
-        (
-            os.path.join(skipper_repo_path, "annotations/gencode.v38.annotation.k562_totalrna.gt1.gff3.gz"),
-            "gencode.v38.annotation.k562_totalrna.gt1.gff3.gz"
-        ),
-        (
-            os.path.join(skipper_repo_path, "annotations/gencode.v38.annotation.hepg2_totalrna.gt1.gff3.gz"),
-            "gencode.v38.annotation.hepg2_totalrna.gt1.gff3.gz"
-        ),
-    ]
-    partition_choices = [
-        (
-            os.path.join(skipper_repo_path,
-                         "annotations/gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.bed.gz"),
-            "gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.bed.gz"
-        ),
-        (
-            os.path.join(skipper_repo_path,
-                         "annotations/gencode.v38.annotation.hepg2_totalrna.gt1.tiled_partition.bed.gz"),
-            "gencode.v38.annotation.hepg2_totalrna.gt1.tiled_partition.bed.gz"
-        ),
-        (
-            os.path.join(skipper_repo_path,
-                         "annotations/gencode.v38.annotation.hek293t.gt1.tiled_partition.bed.gz"),
-            "gencode.v38.annotation.hek293t.gt1.tiled_partition.bed.gz"
-        ),
-        (
-            os.path.join(skipper_repo_path,
-                         "annotations/gencode.v41.annotation.tiled_partition.bed.gz"),
-            "gencode.v41.annotation.tiled_partition.bed.gz"
-        )
-    ]
-    feature_choices = [
-        (
-            os.path.join(skipper_repo_path,
-                         "annotations/gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.features.tsv.gz"),
-            "gencode.v38.annotation.k562_totalrna.gt1.tiled_partition.features.tsv.gz"
-        ),
-        (
-            os.path.join(skipper_repo_path,
-                         "annotations/gencode.v38.annotation.hepg2_totalrna.gt1.tiled_partition.features.tsv.gz"),
-            "gencode.v38.annotation.hepg2_totalrna.gt1.tiled_partition.features.tsv.gz"
-        ),
-        (
-            os.path.join(skipper_repo_path,
-                         "annotations/gencode.v38.annotation.hepg2_totalrna.gt1.tiled_partition.features.tsv.gz"),
-            "gencode.v38.annotation.hepg2_totalrna.gt1.tiled_partition.features.tsv.gz"
-        ),
-        (
-            os.path.join(skipper_repo_path,
-                         "annotations/gencode.v41.annotation.tiled_partition.features.tsv.gz"),
-            "gencode.v41.annotation.tiled_partition.features.tsv.gz"
-        ),
-    ]
-    accession_rankings_choices = [
-        (
-            os.path.join(skipper_repo_path,
-                         "annotations/accession_type_ranking.txt"),
-            "accession_type_ranking.txt"
-        )
-    ]
-    genome_choices = [
-        (
-            "/projects/ps-yeolab4/genomes/GRCh38/chromosomes/GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta",
-            "GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta"
-        )
-    ]
-    star_choices = [
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/star_2_7_gencode40_sjdb/",
-            "star_2_7_gencode40_sjdb/ (GRCh38)"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/star_2_7_6a_gencode19_sjdb/",
-            "star_2_7_6a_gencode19_sjdb/ (hg19)"
-        ),
-    ]
+    feature_choices = get_refs_choices("feature_choices")
+
+    accession_rankings_choices = get_refs_choices("accession_rankings_choices")
+
+    genome_choices = get_refs_choices("genome_choices")
+    star_choices = get_refs_choices("star_choices")
+
     chrom_choices = []
     for tuple in star_choices:
         chrom_choices.append((os.path.join(tuple[0], 'chrNameLength.txt'), tuple[1] + " (must match genome)"))
-    overdispersion_choices = [
-        ('input', 'input'),
-        ('clip', 'clip')
-    ]
-    repeat_table_choices = [
-        (
-            os.path.join(skipper_repo_path, "annotations/repeatmasker.grch38.tsv.gz"),
-            "repeatmasker.grch38.tsv.gz"
-        )
-    ]
-    blacklist_choices = [
-        (
-            os.path.join(skipper_repo_path, 'annotations', 'encode3_eclip_blacklist.bed'),
-            'encode3_eclip_blacklist.bed'
-        )
-    ]
-    gene_sets_choices = [
-        (
-            os.path.join(skipper_repo_path, 'annotations', 'c5.go.v7.5.1.symbols.gmt'),
-            'c5.go.v7.5.1.symbols.gmt'
-        )
-    ]
-    gene_set_reference_choices = [
-        (
-            os.path.join(skipper_repo_path, 'annotations', 'encode3_go_terms.reference.tsv.gz'),
-            'encode3_go_terms.reference.tsv.gz'
-        )
-    ]
-    gene_set_distance_choices = [
-        (
-            os.path.join(skipper_repo_path, 'annotations', 'encode3_go_terms.jaccard_index.rds'),
-            'encode3_go_terms.jaccard_index.rds'
-        )
-    ]
 
-    repo_path = models.CharField(max_length=200, default=skipper_repo_path)
+    overdispersion_choices = get_refs_choices("overdispersion_choices")
+
+    repeat_table_choices = get_refs_choices("repeat_table_choices")
+    blacklist_choices = get_refs_choices("blacklist_choices")
+    gene_sets_choices = get_refs_choices("gene_sets_choices")
+    gene_set_reference_choices = get_refs_choices("gene_set_reference_choices")
+    gene_set_distance_choices = get_refs_choices("gene_set_distance_choices")
+
+    repo_path = models.CharField(max_length=200, default=REFS["skipper_repo_path"])
     manifest = models.CharField(max_length=200, default="manifest.csv")
     gff = models.CharField(max_length=200, choices=gff_choices, default=gff_choices[0])
     partition = models.CharField(max_length=200, choices=partition_choices, default=gff_choices[0])
@@ -187,15 +95,15 @@ class SkipperConfigManifest(models.Model):
 
     overdispersion_mode = models.CharField(max_length=200, choices=overdispersion_choices, default=overdispersion_choices[0])
     conda_dir = models.CharField(max_length=200, default="", blank=True)
-    tool_dir = models.CharField(max_length=200, default=os.path.join(skipper_repo_path, "tools"))
+    tool_dir = models.CharField(max_length=200, default=os.path.join(REFS["skipper_repo_path"], "tools"))
 
-    exe_dir_path = os.path.dirname(skipper_repo_path) if not skipper_repo_path.endswith('/') else os.path.dirname(skipper_repo_path[:-1])
+    exe_dir_path = os.path.dirname(REFS["skipper_repo_path"]) if not REFS["skipper_repo_path"].endswith('/') else os.path.dirname(REFS["skipper_repo_path"][:-1])
     exe_dir = models.CharField(max_length=200, default=exe_dir_path)
 
     star_dir = models.CharField(max_length=90, choices=star_choices, default=star_choices[0])
-    r_exe = models.CharField(max_length=200, default=os.path.join(skipper_env_path, 'bin', 'Rscript'))
+    r_exe = models.CharField(max_length=200, default=os.path.join(REFS["skipper_env_path"], 'bin', 'Rscript'))
     umicollapse_dir = models.CharField(max_length=200, default=os.path.join(exe_dir_path, 'UMICollapse'))
-    java_exe = models.CharField(max_length=200, default=os.path.join(skipper_env_path, 'bin', 'java'))
+    java_exe = models.CharField(max_length=200, default=os.path.join(REFS["skipper_env_path"], 'bin', 'java'))
     genome = models.CharField(max_length=200, choices=genome_choices, default=genome_choices[0])
     chrom_sizes = models.CharField(max_length=200, choices=chrom_choices, default=chrom_choices[0][0])
 
@@ -270,13 +178,13 @@ class Fastq(models.Model):
 
     ip_title = models.CharField(max_length=50, default="IP", validators=[ALPHANUMERICUNDERSCORE])
     ip_path = models.CharField(max_length=255, default="")
-    ip_adapter_path = models.CharField(max_length=255, choices=barcode_choices, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
+    ip_adapter_path = models.CharField(max_length=255, choices=barcode_choices, default=barcode_choices[0])
     ip_rep = models.IntegerField(default=1)
     ip_complete = models.BooleanField()
 
     sminput_title = models.CharField(max_length=50, default="SMINPUT", validators=[ALPHANUMERICUNDERSCORE])
     sminput_path = models.CharField(max_length=255, default="")
-    sminput_adapter_path = models.CharField(max_length=255, choices=barcode_choices, default="/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta")
+    sminput_adapter_path = models.CharField(max_length=255, choices=barcode_choices, default=barcode_choices[0])
     sminput_rep = models.IntegerField(default=1)
     sminput_complete = models.BooleanField()
 
