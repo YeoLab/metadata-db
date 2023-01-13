@@ -2,7 +2,6 @@
 from django import forms
 # import Post model
 from django.forms import HiddenInput, Select
-
 from .models import CLIPManifest, SkipperConfigManifest, Fastq
 
 
@@ -22,7 +21,8 @@ class CLIPManifestForm(forms.ModelForm):
         )
         # TODO: find appropriate widget for each field.
         widgets = {
-            'fastqs': HiddenInput,  # hide field since fastqs will be added using separate input
+            'fastqs': HiddenInput,  # hide field since fastqs will be added 
+                                    # using separate input
         }
 
 
@@ -58,10 +58,10 @@ class SkipperConfigManifestForm(forms.ModelForm):
         )
         # TODO: find appropriate widget for each field.
         widgets = {
-            'fastqs': HiddenInput,  # hide field since fastqs will be added using separate input
-            'repo_path': HiddenInput,
-            'informative_read': HiddenInput,  # hide field since fastqs will be added using separate input
-            'uninformative_read': HiddenInput,
+            'fastqs': HiddenInput,      # hide field since fastqs will be added 
+            'repo_path': HiddenInput,   # using separate input
+            'informative_read': HiddenInput,  # hide field since fastqs will be 
+            'uninformative_read': HiddenInput,# added using separate input
             'conda_dir': HiddenInput,
             'tool_dir': HiddenInput,
             'exe_dir': HiddenInput,

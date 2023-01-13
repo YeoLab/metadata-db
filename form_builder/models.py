@@ -1,18 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
-import os
 from .refs import *
+import os
 
 class CLIPManifest(models.Model):
     species_choices = get_refs_choices('species_choices')
     repeat_choices = get_refs_choices('repeat_choices')
     star_choices = get_refs_choices('star_choices')
-
-    chrom_choices = []
-    for tuple in star_choices:
-        chrom_choices.append((os.path.join(tuple[0], 'chrNameLength.txt'),
-                              tuple[1] + " (must match genome)"))
-
+    chrom_choices = get_chrome_choices(star_choices)
     exclusion_choices = get_refs_choices('exclusion_choices')
 
     dataset = models.CharField(max_length=20, blank=True)
@@ -33,27 +28,15 @@ class CLIPManifest(models.Model):
     def __str__(self):
         return self.dataset
 
-
 class SkipperConfigManifest(models.Model):
-
     gff_choices = get_refs_choices("gff_choices")
     partition_choices = get_refs_choices("partition_choices")
-
     feature_choices = get_refs_choices("feature_choices")
-
     accession_rankings_choices = get_refs_choices("accession_rankings_choices")
-
     genome_choices = get_refs_choices("genome_choices")
     star_choices = get_refs_choices("star_choices")
-
-    chrom_choices = []
-    for tuple in star_choices:
-        chrom_choices.append(
-            (os.path.join(tuple[0], 'chrNameLength.txt'),
-             tuple[1] + " (must match genome)"))
-
+    chrom_choices = get_chrome_choices(star_choices)
     overdispersion_choices = get_refs_choices("overdispersion_choices")
-
     repeat_table_choices = get_refs_choices("repeat_table_choices")
     blacklist_choices = get_refs_choices("blacklist_choices")
     gene_sets_choices = get_refs_choices("gene_sets_choices")
