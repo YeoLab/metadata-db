@@ -106,13 +106,6 @@ class SkipperConfigManifest(models.Model):
 
 
 class Fastq(models.Model):
-    form_choices = [
-        ("RnaseqSE", "RnaseqSE"),
-        ("RnaseqPE", "RnaseqPE"),
-        ("CLIP", "CLIP"),
-        ("SKIPPER", "SKIPPER"),
-    ]
-
     barcode_choices = [
         (
             "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta",
@@ -158,7 +151,7 @@ class Fastq(models.Model):
     ]
 
     submitter = models.ForeignKey(User, on_delete=models.CASCADE)
-    form = models.CharField(max_length=20, choices=form_choices)
+    #form = models.CharField(max_length=20, choices=form_choices)
     experiment = models.CharField(max_length=50, default="EXPERIMENT",
                                   validators=[ALPHANUMERICUNDERSCORE])
     sample = models.CharField(max_length=50, default="SAMPLE", validators=[
