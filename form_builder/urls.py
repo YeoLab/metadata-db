@@ -13,4 +13,6 @@ urlpatterns = [
     path('SKIPPER/', views.SKIPPER_form, name='SKIPPER_form'),
     path('clipper/', views.CLIP_form, name='CLIP_form'),
     path('skipper/', views.SKIPPER_form, name='SKIPPER_form'),
+    path('rnaseqSE/', views.rnaseqSE_form, name='rnaseqSE_form'),
+    path('rnaseqPE/', views.rnaseqPE_form, name='rnaseqPE_form'),
 ]
