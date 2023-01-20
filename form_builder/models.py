@@ -3,6 +3,123 @@ from django.contrib.auth.models import User
 from .refs import *
 import os
 
+
+class Sample(models.Model):
+    experiment = models.CharField(max_length=50, default="EXPERIMENT",
+                                  validators=[ALPHANUMERICUNDERSCORE])
+    sample = models.CharField(max_length=50, default="SAMPLE", validators=[
+                              ALPHANUMERICUNDERSCORE])
+    cells = models.CharField(max_length=50, default="",
+                             validators=[ALPHANUMERICUNDERSCORE])
+    replicate = models.IntegerField(default=1)
+
+    class Meta:
+        abstract = True  # becomes an abstract class, not a model so you can't
+        # generate a database table (for Sample specifically)
+
+
+class Fastq(models.Model):
+    barcode_choices = get_refs_choices("barcodes_choices")
+    submitter = models.ForeignKey(User, on_delete=models.CASCADE)
+    experiment = models.CharField(max_length=50, default="EXPERIMENT",
+                                  validators=[ALPHANUMERICUNDERSCORE])
+    sample = models.CharField(max_length=50, default="SAMPLE", validators=[
+                              ALPHANUMERICUNDERSCORE])
+    cells = models.CharField(max_length=50, default="",
+                             validators=[ALPHANUMERICUNDERSCORE])
+
+    ip_title = models.CharField(max_length=50, default="IP", validators=[
+                                ALPHANUMERICUNDERSCORE])
+    ip_path = models.CharField(max_length=255, default="")
+    ip_adapter_path = models.CharField(
+        max_length=255, choices=barcode_choices, default=barcode_choices[0])
+    ip_rep = models.IntegerField(default=1)
+    ip_complete = models.BooleanField()
+
+    sminput_title = models.CharField(
+        max_length=50, default="SMINPUT", validators=[ALPHANUMERICUNDERSCORE])
+    sminput_path = models.CharField(max_length=255, default="")
+    sminput_adapter_path = models.CharField(
+        max_length=255, choices=barcode_choices, default=barcode_choices[0])
+    sminput_rep = models.IntegerField(default=1)
+    sminput_complete = models.BooleanField()
+
+    def __str__(self):
+        return self.ip_title
+
+
+class SingleEndFastq(Sample):
+    #three_prime_adapter_choices = get_refs_choices(
+        #'three_prime_adapter_choices')
+    three_prime_adapter_clip_choices = get_refs_choices(
+        'three_prime_adapter_clip_choices')
+    three_prime_adapter_skipper_choices = get_refs_choices(
+        'three_prime_adapter_skipper_choices')
+
+    # str: path to read1 of fasta file required
+    read1 = models.CharField(max_length=255, default="")
+    # str: basename of 3' adapter file eg. "InvRNA2.fasta"
+    three_prime_adapters_clip = models.CharField(max_length=200,
+                                    choices=three_prime_adapter_clip_choices)
+    three_prime_adapters_skipper = models.CharField(max_length=200,
+                                    choices=three_prime_adapter_skipper_choices)
+    three_prime_adapters = models.CharField(max_length=200, choices=
+        three_prime_adapter_clip_choices + three_prime_adapter_skipper_choices)
+    # str: basename of 5' adapter file
+    #five_prime_adapters = 
+    # str: string representation of unique molecular identifier pattern
+    umi = models.CharField(max_length=20, default="NNNNNNNNNN")
+
+class PairedEndFastq(Sample):
+    three_prime_adapter_choices = get_refs_choices(
+        'three_prime_adapter_choices')    
+    # str: path to read1 of fasta file required
+    read1 = models.CharField(max_length=255, default="")
+    # str: path to read1 of fasta file required
+    read2 = models.CharField(max_length=255, default="")
+    # str: basename of 3' adapter file for read1 eg. "InvRNA2.fasta"
+    three_prime_adapters_r1 = models.CharField(max_length=200,
+                                            choices=three_prime_adapter_choices)
+    # str: basename of 3' adapter file for read2 eg. "InvRNA2.fasta"
+    three_prime_adapters_r2 = models.CharField(max_length=200,
+                                            choices=three_prime_adapter_choices)
+    # str: basename of 5' adapter file for read1
+    # five_prime_adapters_r1 = 
+    # str: basename of 5' adapter file for read2
+    # five_prime_adapters_r2 = 
+    # str: string representation of unique molecular identifier pattern
+    umi = models.CharField(max_length=20, default="NNNNNNNNNN")
+
+    #def __init__(self):
+        #Fastq.__init__()
+
+
+class ClipperSingleEndFastq(SingleEndFastq):
+    #def __init__(self):
+        #SingleEndFastq.__init__()
+
+    def get_three_prime_adapters(SingleEndFastq):
+        return os.path.join(
+            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs",
+            SingleEndFastq.three_prime_adapters_clip)
+
+
+class SkipperSingleEndFastq(SingleEndFastq):
+    #def __init__(self):
+        #SingleEndFastq.__init__()
+
+    def get_three_prime_adapters(SingleEndFastq):
+        return os.path.join(
+            "/projects/ps-yeolab4/software/skipper/1.0.0/examples/inputs",
+            SingleEndFastq.three_prime_adapters_skipper)
+
+
+class RnaSeqSingleEndFastq(SingleEndFastq):
+    pass
+    #def __init__(self):
+        #SingleEndFastq.__init__()
+
+
 class CLIPManifest(models.Model):
     species_choices = get_refs_choices('species_choices')
     repeat_choices = get_refs_choices('repeat_choices')
@@ -27,6 +144,7 @@ class CLIPManifest(models.Model):
 
     def __str__(self):
         return self.dataset
+
 
 class SkipperConfigManifest(models.Model):
     gff_choices = get_refs_choices("gff_choices")
@@ -106,52 +224,8 @@ class SkipperConfigManifest(models.Model):
 
 
 class Fastq(models.Model):
-    barcode_choices = [
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRiL19_adapters.fasta",
-            "InvRiL19_adapters.fasta (eCLIP)"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA1_adapters.fasta",
-            "InvRNA1_adapters.fasta (eCLIP)"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA2_adapters.fasta",
-            "InvRNA2_adapters.fasta (eCLIP)"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA3_adapters.fasta",
-            "InvRNA3_adapters.fasta (eCLIP)"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA4_adapters.fasta",
-            "InvRNA4_adapters.fasta (eCLIP)"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA5_adapters.fasta",
-            "InvRNA5_adapters.fasta (eCLIP)"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA6_adapters.fasta",
-            "InvRNA6_adapters.fasta (eCLIP)"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA7_adapters.fasta",
-            "InvRNA7_adapters.fasta (eCLIP)"
-        ),
-        (
-            "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs/InvRNA8_adapters.fasta",
-            "InvRNA8_adapters.fasta (eCLIP)"
-        ),
-        (
-            "/projects/ps-yeolab4/software/skipper/8674296/examples/InvRiL19.fasta",
-            "InvRiL19.fasta (SKIPPER)"
-        ),
-
-    ]
-
+    barcode_choices = get_refs_choices("barcodes_choices")
     submitter = models.ForeignKey(User, on_delete=models.CASCADE)
-    #form = models.CharField(max_length=20, choices=form_choices)
     experiment = models.CharField(max_length=50, default="EXPERIMENT",
                                   validators=[ALPHANUMERICUNDERSCORE])
     sample = models.CharField(max_length=50, default="SAMPLE", validators=[
@@ -178,12 +252,13 @@ class Fastq(models.Model):
     def __str__(self):
         return self.ip_title
 
-    
-class RnaseqSE(models.Model):
-    species_choices = [('hg19', 'hg19'), ('mm10', 'mm10'), ('GRCh38', 'GRCh38')]
+
+class Rnaseq(models.Model):
+    form_choices = [('SE', 'SE'), ('PE', 'PE')]
+    species_choices = get_refs_choices('species_choices')
     chrom_choices = [
-        ('inputs/mm10.chrom.sizes', 'mm10.chrom.sizes'), 
-        ('inputs/hg19.chrom.sizes', 'hg19.chrom.sizes'), 
+        ('inputs/mm10.chrom.sizes', 'mm10.chrom.sizes'),
+        ('inputs/hg19.chrom.sizes', 'hg19.chrom.sizes'),
         ('inputs/GRCh38.chrom.sizes', 'GRCh38.chrom.sizes')
     ]
     species_genome_choices = [
@@ -202,51 +277,17 @@ class RnaseqSE(models.Model):
     ]
 
     direction_choices = [
-        ('r', 'r'), 
+        ('r', 'r'),
         ('f', 'f')
     ]
-
+    form = models.CharField(max_length=3, choices=form_choices)
     species = models.CharField(max_length=20, choices=species_choices)
     speciesChromSizes = models.CharField(max_length=200, choices=chrom_choices)
-    speciesGenomeDir = models.CharField(max_length=90, choices=species_genome_choices)
-    repeatElementGenomeDir = models.CharField(max_length=120, choices=repeat_choices)
+    speciesGenomeDir = models.CharField(
+        max_length=90, choices=species_genome_choices)
+    repeatElementGenomeDir = models.CharField(
+        max_length=120, choices=repeat_choices)
     b_adapters = models.CharField(max_length=120, choices=adapter_choices)
-    direction = models.CharField(max_length = 2, choices=direction_choices, default="r")
+    direction = models.CharField(
+        max_length=2, choices=direction_choices, default="r")
     fastqs = models.CharField(max_length=200, blank=True)
-
-class RnaseqPE(models.Model):
-    species_choices = [('hg19', 'hg19'), ('mm10', 'mm10'), ('GRCh38', 'GRCh38')]
-    chrom_choices = [
-        ('inputs/mm10.chrom.sizes', 'mm10.chrom.sizes'), 
-        ('inputs/hg19.chrom.sizes', 'hg19.chrom.sizes'), 
-        ('inputs/GRCh38.chrom.sizes', 'GRCh38.chrom.sizes')
-    ]
-    species_genome_choices = [
-        ('inputs/star_2_4_0i_gencode19_sjdb', 'star_2_4_0i_gencode19_sjdb'),
-        ('inputs/star_2_4_0i_gencode24_sjdb', 'star_2_4_0i_gencode24_sjdb'),
-        ('inputs/star_2_4_0i_gencode29_sjdb', 'star_2_4_0i_gencode29_sjdb'),
-        ('inputs/star_2_4_0i_mm10_sjdb', 'star_2_4_0i_mm10_sjdb')
-    ]
-    repeat_choices = [
-        ('inputs/homo_sapiens_repbase_v2', 'homo_sapiens_repbase_v2'),
-        ('inputs/mus_musculus_repbase_v2', 'mus_musculus_repbase_v2'),
-        ('inputs/rat_rattus_repbase_v2', 'rat_rattus_repbase_v2')
-    ]
-    adapter_choices = [
-        ('inputs/adapters.fasta', 'adapters.fasta')
-    ]
-
-    direction_choices = [
-        ('r', 'r'), 
-        ('f', 'f')
-    ]
-
-    species = models.CharField(max_length=20, choices=species_choices)
-    speciesChromSizes = models.CharField(max_length=200, choices=chrom_choices)
-    speciesGenomeDir = models.CharField(max_length=90, choices=species_genome_choices)
-    repeatElementGenomeDir = models.CharField(max_length=120, choices=repeat_choices)
-    b_adapters = models.CharField(max_length=120, choices=adapter_choices)
-    direction = models.CharField(max_length = 2, choices=direction_choices, default="r")
-    fastqs = models.CharField(max_length=200, blank=True)
-
-

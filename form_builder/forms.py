@@ -3,7 +3,7 @@ from django import forms
 # import Post model
 from django.forms import HiddenInput, Select
 
-from .models import CLIPManifest, SkipperConfigManifest, Fastq, RnaseqSE, RnaseqPE
+from .models import CLIPManifest, SkipperConfigManifest, Fastq, Rnaseq
 
 
 class CLIPManifestForm(forms.ModelForm):
@@ -91,7 +91,6 @@ class FastqForm(forms.ModelForm):
             'sminput_adapter_path': Select,
         }
 
-
 class FastqSkipperForm(forms.ModelForm):
     class Meta:
         model = Fastq
@@ -114,22 +113,11 @@ class FastqSkipperForm(forms.ModelForm):
     def clean(self):
         super(FastqSkipperForm)
 
-class RnaseqSEForm(forms.ModelForm):
+class RnaseqForm(forms.ModelForm):
     class Meta:
-        model = RnaseqSE
+        model = Rnaseq
         fields = (
-            'species',
-            'speciesChromSizes',
-            'speciesGenomeDir',
-            'repeatElementGenomeDir',
-            'b_adapters',
-            'direction',
-        )
-
-class RnaseqPEForm(forms.ModelForm):
-    class Meta:
-        model = RnaseqPE
-        fields = (
+            'form',
             'species',
             'speciesChromSizes',
             'speciesGenomeDir',
