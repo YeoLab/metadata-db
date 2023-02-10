@@ -1,6 +1,6 @@
 from django.db import models
-from models.sample import Sample
-from .refs.refs_utils import *
+from form_builder.models.sample import Sample
+from form_builder.refs.refs_utils import *
 
 class Fastq(Sample):
     '''

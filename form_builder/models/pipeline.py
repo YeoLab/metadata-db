@@ -1,6 +1,6 @@
 from django.db import models
-from .refs.refs_utils import *
-from models.fastq import SingleEndFastq
+from form_builder.refs.refs_utils import *
+from form_builder.models.fastq import SingleEndFastq
 
 
 class ClipperSingleEndFastq(SingleEndFastq):

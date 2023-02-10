@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .refs.refs_utils import *
+from form_builder.refs.refs_utils import *
 
 
 class Sample(models.Model):
