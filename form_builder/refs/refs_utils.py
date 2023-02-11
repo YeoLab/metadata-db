@@ -6,7 +6,7 @@ import os
 ALPHANUMERICUNDERSCORE = RegexValidator
 (r'^[0-9a-zA-Z_]*$', 'Only alphanumeric characters are allowed.')
 
-with open('refs.yaml', 'r') as stream:
+with open('form_builder/refs/refs.yaml', 'r') as stream:
     try:
         REFS = yaml.safe_load(stream)
     except yaml.YAMLError as exc:

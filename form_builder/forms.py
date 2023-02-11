@@ -3,12 +3,12 @@ from django import forms
 # import Post model
 from django.forms import HiddenInput, Select
 
-from .models import CLIPManifest, SkipperConfigManifest, Fastq, Rnaseq
+from .models import ClipperSingleEndFastq, SkipperSingleEndFastq, Fastq, RnaSeqSingleEndFastq
 
 
 class CLIPManifestForm(forms.ModelForm):
     class Meta:
-        model = CLIPManifest
+        model = ClipperSingleEndFastq
         fields = (
             'dataset',
             'description',
@@ -29,7 +29,7 @@ class CLIPManifestForm(forms.ModelForm):
 
 class SkipperConfigManifestForm(forms.ModelForm):
     class Meta:
-        model = SkipperConfigManifest
+        model = SkipperSingleEndFastq
         fields = (
             'repo_path',
             'manifest',
@@ -115,7 +115,7 @@ class FastqSkipperForm(forms.ModelForm):
 
 class RnaseqForm(forms.ModelForm):
     class Meta:
-        model = Rnaseq
+        model = RnaSeqSingleEndFastq
         fields = (
             'form',
             'species',
