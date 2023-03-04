@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import ClipperSingleEndFastq, SkipperSingleEndFastq, Fastq, SkipperSingleEndFastq
+from .models import ClipperManifest, SkipperManifest, SingleEndFastq
 
 # make model visible on the admin page
-admin.site.register(ClipperSingleEndFastq)
-admin.site.register(SkipperSingleEndFastq)
+admin.site.register(ClipperManifest)
+admin.site.register(SkipperManifest)
 # Register your models here.

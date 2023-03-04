@@ -12,7 +12,8 @@ class Fastq(Sample):
     adapter_path = models.CharField(
         max_length=255, choices=barcode_choices, default=barcode_choices[0])
     three_prime_adapters_r1 = models.CharField(max_length=200, choices=
-        three_prime_adapter_clip_choices + three_prime_adapter_skipper_choices)
+        three_prime_adapter_clip_choices + three_prime_adapter_skipper_choices, 
+        default ="")
     five_prime_adapters_r1 = models.CharField(max_length=200, blank=True)
     umi = models.CharField(max_length=20, default="NNNNNNNNNN")
 

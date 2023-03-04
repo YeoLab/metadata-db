@@ -1,6 +1,6 @@
 # imports
 from django.contrib import messages
-from .models import Fastq
+from .models import SingleEndFastq
 import yaml
 from django.http import HttpResponse
 
@@ -21,7 +21,7 @@ def make_CLIP_form(form, request):
         for key in request.POST.keys():  # generate list of fastqs
             try:
                 if key.startswith('fqid_'):
-                    Fastq.objects.get(pk=request.POST.get(key))
+                    SingleEndFastq.objects.get(pk=request.POST.get(key))
                     fastqs.append(request.POST.get(key))
             except Exception as e:
                 print(e)
@@ -39,16 +39,22 @@ def make_CLIP_form(form, request):
             return response
 
     elif request.POST.get("newItem"):   # "Add Sample" button
+        experiment = request.POST.get("experiment")
+        sample = request.POST.get("sample")
+        cells = request.POST.get("cells")
+        replicate = request.POST.get("replicate")
+        path = request.POST.get("path")
+        adapter = request.POST.get("adapter")
+        submitter = request.user
+
+        '''
         ip_fastq_path = request.POST.get("ip_fastq_path")
         ip_adapter_path = request.POST.get("ip_adapter_path")
         sminput_fastq_path = request.POST.get("sminput_fastq_path")
         sminput_adapter_path = request.POST.get("sminput_adapter_path")
-        cells = request.POST.get("cells")
-        experiment = request.POST.get("experiment")
-        sample = request.POST.get("sample")
         ip_rep = request.POST.get("ip_rep")
         sminput_rep = request.POST.get("sminput_rep")
-        submitter = request.user
+        '''
 
         make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
                    sminput_adapter_path, sminput_rep,
@@ -56,7 +62,7 @@ def make_CLIP_form(form, request):
     else:                               # Delete fastq
         for key in request.POST.keys():
             if key.startswith('delete_fqid_'):
-                Fastq.objects.filter(
+                SingleEndFastq.objects.filter(
                     id=int(key.split('delete_fqid_')[1])).delete()
 
 def make_SKIPPER_form(form, request):
@@ -77,7 +83,7 @@ def make_SKIPPER_form(form, request):
         for key in request.POST.keys():     # generate list of fastqs
             try:
                 if key.startswith('fqid_'): 
-                    Fastq.objects.get(pk=request.POST.get(key))
+                    SingleEndFastq.objects.get(pk=request.POST.get(key))
                     fastqs.append(request.POST.get(key))
             except Exception as e:
                 print(e)  
@@ -123,7 +129,7 @@ def make_SKIPPER_form(form, request):
     else:                                   # Delete fastq
         for key in request.POST.keys():
             if key.startswith('delete_fqid_'):
-                    Fastq.objects.filter(
+                    SingleEndFastq.objects.filter(
                     id=int(key.split('delete_fqid_')[1])).delete()
 
 def make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
@@ -161,7 +167,7 @@ def make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
         )
 
     # duplicate fastq paths
-    elif len(Fastq.objects.filter(sample=sample, ip_path=ip_fastq_path,
+    elif len(SingleEndFastq.objects.filter(sample=sample, ip_path=ip_fastq_path,
                                   sminput_path=sminput_fastq_path)) > 0:
         messages.error(
             request,
@@ -170,7 +176,7 @@ def make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
         )
 
     # duplicate reps for same sample
-    elif len(Fastq.objects.filter(sample=sample, ip_rep=ip_rep,
+    elif len(SingleEndFastq.objects.filter(sample=sample, ip_rep=ip_rep,
                                   sminput_rep=sminput_rep,
                                   submitter=request.user)) > 0:
         messages.error(
@@ -183,7 +189,7 @@ def make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
     # valid fastq
     else:
         # warning for duplicate ip rep
-        if len(Fastq.objects.filter(sample=sample, ip_rep=ip_rep,
+        if len(SingleEndFastq.objects.filter(sample=sample, ip_rep=ip_rep,
                                     submitter=request.user)) > 0:
             messages.warning(
                 request,
@@ -191,7 +197,7 @@ def make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
                     (but with a different Size-matched Input replicate).'
             )
         # warning for duplicate input rep
-        if len(Fastq.objects.filter(sample=sample, sminput_rep=sminput_rep,
+        if len(SingleEndFastq.objects.filter(sample=sample, sminput_rep=sminput_rep,
                                     submitter=request.user)) > 0:
             messages.warning(
                 request,
@@ -200,7 +206,7 @@ def make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
                     IP replicate).'
             )
         # create fastq object with submitted fields
-        Fastq.objects.create(
+        SingleEndFastq.objects.create(
             submitter=submitter,
             experiment=experiment,
             sample=sample,
@@ -233,7 +239,7 @@ def CLIP_yaml(clip):
     for field, value in clip.__dict__.items():
         if field == 'fastqs':
             for i in value.split(','):
-                fastq = Fastq.objects.get(pk=i)
+                fastq = SingleEndFastq.objects.get(pk=i)
                 field_dict['samples'].append([
                     {'name': fastq.ip_title,
                         'read1': {'class': 'File', 'path': fastq.ip_path},
@@ -272,7 +278,7 @@ def skipper_tsv(clip):
     for field, value in clip.__dict__.items():
         if field == 'fastqs':
             for i in value.split(','):
-                fastq = Fastq.objects.get(pk=i)
+                fastq = SingleEndFastq.objects.get(pk=i)
                 row = ','.join([
                     fastq.experiment,
                     fastq.sample,

@@ -3,7 +3,7 @@ from form_builder.refs.refs_utils import *
 from form_builder.models.fastq import SingleEndFastq
 
 
-class ClipperSingleEndFastq(SingleEndFastq):
+class ClipperManifest(SingleEndFastq): #change to manifest instead of fastq
     dataset = models.CharField(max_length=20, blank=True)
     description = models.CharField(max_length=200, blank=True)
     species = models.CharField(
@@ -28,7 +28,7 @@ class ClipperSingleEndFastq(SingleEndFastq):
         return self.dataset
 
 
-class SkipperSingleEndFastq(SingleEndFastq):
+class SkipperManifest(SingleEndFastq):
     repo_path = models.CharField(
         max_length=200, default=REFS["skipper_repo_path"])
     manifest = models.CharField(max_length=200, default="manifest.csv")
@@ -96,8 +96,7 @@ class SkipperSingleEndFastq(SingleEndFastq):
             SingleEndFastq.three_prime_adapters_skipper)
 
 
-class RnaSeqSingleEndFastq(SingleEndFastq):
-    form_choices = [('SE', 'SE'), ('PE', 'PE')]
+class RnaSeqManifest(SingleEndFastq):
     chrom_choices = [
         ('inputs/mm10.chrom.sizes', 'mm10.chrom.sizes'),
         ('inputs/hg19.chrom.sizes', 'hg19.chrom.sizes'),
@@ -122,7 +121,6 @@ class RnaSeqSingleEndFastq(SingleEndFastq):
         ('r', 'r'),
         ('f', 'f')
     ]
-    form = models.CharField(max_length=3, choices=form_choices)
     species = models.CharField(max_length=20, choices=species_choices)
     speciesChromSizes = models.CharField(max_length=200, choices=chrom_choices)
     speciesGenomeDir = models.CharField(

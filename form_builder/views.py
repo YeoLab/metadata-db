@@ -1,9 +1,9 @@
 # imports
 from django.contrib.auth.decorators import login_required
 from mysite import settings
-from .models import Fastq
+from .models import SingleEndFastq
 from django.shortcuts import render
-from .forms import CLIPManifestForm, SkipperConfigManifestForm, RnaseqForm
+from .forms import CLIPManifestForm, SkipperConfigManifestForm
 from .utils import *
 
 import yaml
@@ -12,7 +12,7 @@ from django.http import HttpResponse
 
 @login_required
 def CLIP_form(request):
-    fastq = Fastq.objects.filter(submitter=request.user)
+    SEfastqs = SingleEndFastq.objects.filter(submitter=request.user)
     if request.method == 'POST':
         form = CLIPManifestForm(request.POST)
         data = make_CLIP_form(form, request)
@@ -22,12 +22,12 @@ def CLIP_form(request):
         form = CLIPManifestForm()
 
     return render(request, 'form_builder/CLIP_form.html', {'form': form,
-                                                           'fastq': fastq})
+                                                           'SEfastqs': SEfastqs})
 
 
 @login_required
 def SKIPPER_form(request):
-    fastq = Fastq.objects.filter(submitter=request.user)
+    fastq = SingleEndFastq.objects.filter(submitter=request.user)
     if request.method == 'POST':
         form = SkipperConfigManifestForm(request.POST)
         data = make_SKIPPER_form(form, request)
@@ -35,11 +35,11 @@ def SKIPPER_form(request):
             return data
     else:
         form = SkipperConfigManifestForm()
-    return render(request, 'form_builder/SKIPPER_form.html', {'form': form, 'fastq': fastq})
+    return render(request, 'form_builder/SKIPPER_form.html', {'form': form}) #, 'fastq': fastq})
 
 
 def rnaseqSE_form(request):
-    fastq = Fastq.objects.filter(submitter=request.user)
+    fastq = SingleEndFastq.objects.filter(submitter=request.user)
     # submit form with filled out fields
     if request.method == 'POST':
         form = RnaseqForm(request.POST)
@@ -77,7 +77,7 @@ def rnaseqSE_form(request):
 
 
 def rnaseqPE_form(request):
-    fastq = Fastq.objects.filter(submitter=request.user)
+    fastq = SingleEndFastq.objects.filter(submitter=request.user)
     # submit form with filled out fields
     if request.method == 'POST':
         form = RnaseqForm(request.POST)

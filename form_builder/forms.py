@@ -1,23 +1,19 @@
-# import django forms
 from django import forms
-# import Post model
 from django.forms import HiddenInput, Select
-
-from .models import ClipperSingleEndFastq, SkipperSingleEndFastq, Fastq, RnaSeqSingleEndFastq
+from .models import ClipperManifest, SkipperManifest, SingleEndFastq, RnaSeqManifest
 
 
 class CLIPManifestForm(forms.ModelForm):
     class Meta:
-        model = ClipperSingleEndFastq
+        model = ClipperManifest
         fields = (
             'dataset',
             'description',
             'species',
-            'chrom_sizes',
-            'speciesGenomeDir',
             'repeatElementGenomeDir',
+            'speciesGenomeDir',
+            'chrom_sizes',
             'blacklist_file',
-            'umi_pattern',
             'fastqs',
         )
         # TODO: find appropriate widget for each field.
@@ -29,7 +25,7 @@ class CLIPManifestForm(forms.ModelForm):
 
 class SkipperConfigManifestForm(forms.ModelForm):
     class Meta:
-        model = SkipperSingleEndFastq
+        model = SkipperManifest
         fields = (
             'repo_path',
             'manifest',
@@ -72,43 +68,37 @@ class SkipperConfigManifestForm(forms.ModelForm):
         }
 
 
-class FastqForm(forms.ModelForm):
+''' class FastqForm(forms.ModelForm):
     class Meta:
-        model = Fastq
+        model = SingleEndFastq
         fields = (
-            'ip_title',
-            'ip_path',
-            'ip_adapter_path',
-            'ip_complete',
-            'sminput_title',
-            'sminput_path',
-            'sminput_adapter_path',
-            'sminput_complete',
+            'title',
+            'path',
+            'adapter_path',
+            'three_prime_adapters_r1',
+            'five_prime_adapters_r1',
+            'umi',
+            
         )
         # TODO: find appropriate widget for each field.
         widgets = {
-            'ip_adapter_path': Select,
-            'sminput_adapter_path': Select,
+            'adapter_path': Select,
         }
 
 class FastqSkipperForm(forms.ModelForm):
     class Meta:
-        model = Fastq
+        model = SingleEndFastq
         fields = (
-            'cells',
-            'ip_title',
-            'ip_path',
-            'ip_adapter_path',
-            'ip_complete',
-            'sminput_title',
-            'sminput_path',
-            'sminput_adapter_path',
-            'sminput_complete',
+            'title',
+            'path',
+            'adapter_path',
+            'three_prime_adapters_r1',
+            'five_prime_adapters_r1',
+            'umi',
         )
         # TODO: find appropriate widget for each field.
         widgets = {
-            'ip_adapter_path': Select,
-            'sminput_adapter_path': Select,
+            'adapter_path': Select,
         }
     def clean(self):
         super(FastqSkipperForm)
@@ -117,7 +107,6 @@ class RnaseqForm(forms.ModelForm):
     class Meta:
         model = RnaSeqSingleEndFastq
         fields = (
-            'form',
             'species',
             'speciesChromSizes',
             'speciesGenomeDir',
@@ -125,3 +114,4 @@ class RnaseqForm(forms.ModelForm):
             'b_adapters',
             'direction',
         )
+'''
