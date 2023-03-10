@@ -27,7 +27,10 @@ def make_CLIP_form(form, request):
                 print(e)
                 pass
 
+        print(fastqs)
+
         if form.is_valid():             # save valid form and download YAML
+            print("hey")
             clip = form.save(commit=False)
             clip.fastqs = ','.join(fastqs)
             clip.save()
@@ -47,18 +50,9 @@ def make_CLIP_form(form, request):
         adapter = request.POST.get("adapter")
         submitter = request.user
 
-        '''
-        ip_fastq_path = request.POST.get("ip_fastq_path")
-        ip_adapter_path = request.POST.get("ip_adapter_path")
-        sminput_fastq_path = request.POST.get("sminput_fastq_path")
-        sminput_adapter_path = request.POST.get("sminput_adapter_path")
-        ip_rep = request.POST.get("ip_rep")
-        sminput_rep = request.POST.get("sminput_rep")
-        '''
-
-        make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
-                   sminput_adapter_path, sminput_rep,
-                   cells, experiment, sample, submitter, request)
+        make_fastq(replicate, path, adapter, cells, experiment, sample, 
+                   submitter, request)
+        
     else:                               # Delete fastq
         for key in request.POST.keys():
             if key.startswith('delete_fqid_'):
@@ -132,20 +126,16 @@ def make_SKIPPER_form(form, request):
                     SingleEndFastq.objects.filter(
                     id=int(key.split('delete_fqid_')[1])).delete()
 
-def make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
-               sminput_adapter_path, sminput_rep,
-               cells, experiment, sample, submitter, request):
+def make_fastq(replicate, path, adapter, cells, experiment, sample, 
+                   submitter, request): 
     '''
     Checks for valid FASTQs. Will output a message popup if fields are invalid 
     or incomplete or duplicates exist. For valid FASTQs, will create a FASTQ 
     Object.
     Args:
-        ip_fastq_path: string
-        ip_adapter_path: string
-        ip_rep: string
-        sminput_fastq_path: string
-        sminput_adapter_path: string
-        sminput_rep: string
+        replicate: string
+        path: string
+        adapter: string
         cells: string
         experiment: string
         sample: string
@@ -156,10 +146,9 @@ def make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
 
     '''
     # complete fields
-    if ip_fastq_path is None or ip_adapter_path is None or ip_rep is None or \
-            sminput_fastq_path is None or sminput_adapter_path is None or \
-            sminput_rep is None or cells is None or experiment is None or \
-            sample is None or submitter is None:
+    if path is None or replicate is None or adapter is None or \
+        cells is None or experiment is None or sample is None or \
+        submitter is None:
         messages.error(
             request,
             f'Failed to add sample {sample} to the database \
@@ -167,33 +156,30 @@ def make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
         )
 
     # duplicate fastq paths
-    elif len(SingleEndFastq.objects.filter(sample=sample, ip_path=ip_fastq_path,
-                                  sminput_path=sminput_fastq_path)) > 0:
+    elif len(SingleEndFastq.objects.filter(sample=sample, path=path)) > 0:
         messages.error(
             request,
-            f'Fastq path: {ip_fastq_path} and {sminput_fastq_path} already \
-                exists! Refusing to add to database.'
+            f'Fastq path: {path} already exists! Refusing to add to database.'
         )
 
     # duplicate reps for same sample
-    elif len(SingleEndFastq.objects.filter(sample=sample, ip_rep=ip_rep,
-                                  sminput_rep=sminput_rep,
+    elif len(SingleEndFastq.objects.filter(sample=sample, replicate=replicate,
                                   submitter=request.user)) > 0:
         messages.error(
             request,
-            f'IP Replicate {ip_rep} and Size-matched Input Replicate \
-                {sminput_rep} for sample {sample} already exists! Refusing to \
-                add to database.'
+            f'Replicate {replicate} for sample {sample} already exists! \
+                Refusing to add to database.'
         )
 
     # valid fastq
     else:
+        '''
         # warning for duplicate ip rep
-        if len(SingleEndFastq.objects.filter(sample=sample, ip_rep=ip_rep,
+        if len(SingleEndFastq.objects.filter(sample=sample, replicate=replicate,
                                     submitter=request.user)) > 0:
             messages.warning(
                 request,
-                f'Warning - {sample} IP Replicate {ip_rep} exists in database \
+                f'Warning - {sample} Replicate {replicate} exists in database \
                     (but with a different Size-matched Input replicate).'
             )
         # warning for duplicate input rep
@@ -205,22 +191,17 @@ def make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
                     {sminput_rep} exists in database (but with a different \
                     IP replicate).'
             )
+        '''
         # create fastq object with submitted fields
         SingleEndFastq.objects.create(
             submitter=submitter,
             experiment=experiment,
             sample=sample,
-            ip_title=sample + "_CLIP_" + ip_rep,
-            ip_rep=ip_rep,
-            ip_path=ip_fastq_path,
-            ip_adapter_path=ip_adapter_path,
-            ip_complete=False,
+            title=sample + "_CLIP_" + replicate,
+            replicate=replicate,
+            path=path,
             cells=cells,
-            sminput_title=sample + "_SMINPUT_" + sminput_rep,
-            sminput_rep=sminput_rep,
-            sminput_path=sminput_fastq_path,
-            sminput_adapter_path=sminput_adapter_path,
-            sminput_complete=False
+            adapter_path=adapter,
         )
     return
 

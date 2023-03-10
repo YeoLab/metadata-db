@@ -8,27 +8,19 @@
         <th style="width:10%;">Name</th>
         <th style="width:100%;">Path</th>
     </tr>
-    {% for fastq in fastq %}
+    {% for fastq in SEfastqs %}
     <tr>
-        <td style="width:10%;vertical-align : middle;text-align:center;" rowspan="4"><input class="mx-2" type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true"></td>
-        <td style="width:10%;vertical-align : middle;" rowspan="4">
+        <td style="width:10%;vertical-align : middle;text-align:center;" rowspan="2"><input class="mx-2" type="checkbox" value={{fastq.id}} name="fqid_{{fastq.id}}" checked="true"></td>
+        <td style="width:10%;vertical-align : middle;" rowspan="2">
 
             <button type="submit" name="delete_fqid_{{fastq.id}}" class="btn btn-danger">Delete</button>
         </td>
-        <td style="width:10%;" >IP fastq path (Replicate <b>{{fastq.ip_rep}}</b>)</td>
-        <td><input style="width:100%;" disabled id="ip_path" value="{{fastq.ip_path}}"></input></td>
+        <td style="width:10%;" >Fastq path (Replicate <b>{{fastq.replicate}}</b>)</td>
+        <td><input style="width:100%;" disabled id="display_path" value="{{fastq.path}}"></input></td>
     </tr>
     <tr>
-        <td style="width:10%;" >IP adapter path</td>
-        <td><input style="width:100%;" disabled id="IP_display_adapter_path" value="{{fastq.ip_adapter_path}}"></input></td>
-    </tr>
-    <tr>
-        <td style="width:10%;" >SMInput path (Replicate <b>{{fastq.sminput_rep}}</b>)</td>
-        <td><input style="width:100%;" disabled id="sminput_display_path" value="{{fastq.sminput_path}}"></input></td>
-    </tr>
-    <tr>
-        <td style="width:10%;" >SMInput adapter path</td>
-        <td><input style="width:100%;" disabled id="sminput_display_adapter_path" value="{{fastq.sminput_adapter_path}}"></input></td>
+        <td style="width:10%;" >Adapter path</td>
+        <td><input style="width:100%;" disabled id="display_adapter_path" value="{{fastq.adapter_path}}"></input></td>
     </tr>
     {% endfor %}
     </table>

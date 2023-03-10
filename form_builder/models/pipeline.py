@@ -3,7 +3,7 @@ from form_builder.refs.refs_utils import *
 from form_builder.models.fastq import SingleEndFastq
 
 
-class ClipperManifest(SingleEndFastq): #change to manifest instead of fastq
+class ClipperManifest(models.Model): #change to manifest instead of fastq
     dataset = models.CharField(max_length=20, blank=True)
     description = models.CharField(max_length=200, blank=True)
     species = models.CharField(
@@ -18,7 +18,7 @@ class ClipperManifest(SingleEndFastq): #change to manifest instead of fastq
         max_length=120, choices=exclusion_choices, default=exclusion_choices[0])
     fastqs = models.CharField(max_length=200, blank=True)
     #fastqs = models.ForeignKey(User, on_delete=models.CASCADE)
-
+'''
     def get_three_prime_adapters(SingleEndFastq):
         return os.path.join(
             "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs",
@@ -26,6 +26,7 @@ class ClipperManifest(SingleEndFastq): #change to manifest instead of fastq
     
     def __str__(self):
         return self.dataset
+'''
 
 
 class SkipperManifest(SingleEndFastq):
