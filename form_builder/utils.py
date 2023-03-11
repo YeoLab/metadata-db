@@ -27,13 +27,12 @@ def make_CLIP_form(form, request):
                 print(e)
                 pass
 
-        print(fastqs)
-
         if form.is_valid():             # save valid form and download YAML
-            print("hey")
+            print(form)
             clip = form.save(commit=False)
             clip.fastqs = ','.join(fastqs)
             clip.save()
+
             file_data = CLIP_yaml(clip)
             response = HttpResponse(
                 file_data, content_type='application/text charset=utf-8')
