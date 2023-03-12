@@ -221,14 +221,14 @@ def CLIP_yaml(clip):
             for i in value.split(','):
                 fastq = SingleEndFastq.objects.get(pk=i)
                 field_dict['samples'].append([
-                    {'name': fastq.ip_title,
-                        'read1': {'class': 'File', 'path': fastq.ip_path},
+                    {'name': fastq.title,
+                        'read1': {'class': 'File', 'path': fastq.path},
                         'adapters': {'class': 'File',
-                                     'path': fastq.ip_adapter_path}},
-                    {'name': fastq.sminput_title,
-                        'read1': {'class': 'File', 'path': fastq.sminput_path},
+                                     'path': fastq.adapter_path}},
+                    {'name': fastq.title,
+                        'read1': {'class': 'File', 'path': fastq.path},
                         'adapters': {'class': 'File',
-                                     'path': fastq.sminput_adapter_path}},
+                                     'path': fastq.adapter_path}},
                 ])
         elif field in ['speciesGenomeDir', 'repeatElementGenomeDir']:
             field_dict[field] = {'class': 'Directory', 'path': value}
