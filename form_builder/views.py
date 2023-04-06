@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from mysite import settings
 from .models import SingleEndFastq
 from django.shortcuts import render
-from .forms import CLIPManifestForm, SkipperConfigManifestForm
+from .forms import CLIPManifestForm#, SkipperConfigManifestForm
 from .utils import *
 
 import yaml
@@ -24,7 +24,7 @@ def CLIP_form(request):
     return render(request, 'form_builder/CLIP_form.html', {'form': form,
                                                            'SEfastqs': SEfastqs})
 
-
+'''
 @login_required
 def SKIPPER_form(request):
     fastq = SingleEndFastq.objects.filter(submitter=request.user)
@@ -136,6 +136,7 @@ def rnaseqSE_yaml(rnaseq):
 
 def rnaseqPE_yaml(rnaseq):
     pass
+'''
 
 def index_view(request):
     context = {'LOGIN_URL': settings.LOGIN_URL}

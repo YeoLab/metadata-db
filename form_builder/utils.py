@@ -28,7 +28,6 @@ def make_CLIP_form(form, request):
                 pass
 
         if form.is_valid():             # save valid form and download YAML
-            print(form)
             clip = form.save(commit=False)
             clip.fastqs = ','.join(fastqs)
             clip.save()
@@ -58,72 +57,73 @@ def make_CLIP_form(form, request):
                 SingleEndFastq.objects.filter(
                     id=int(key.split('delete_fqid_')[1])).delete()
 
-def make_SKIPPER_form(form, request):
-    '''
-    If download manifest button is clicked, generates list of FASTQs, 
-    and csv file is downloaded onto the page. If download config button is 
-    clicked, will download a 'Skipper_config.py file'. If adding sample, 
-    creates a new FASTQ object. Otherwise, deletes FASTQ object.
-    Args:
-        form: SkipperConfigManifestForm
-        request: HttpRequest
 
-    Returns:
-        response: HttpResponse
-    '''
-    if request.POST.get("save_manifest"):   # "Save and Download MANIFEST"
-        fastqs = []
-        for key in request.POST.keys():     # generate list of fastqs
-            try:
-                if key.startswith('fqid_'): 
-                    SingleEndFastq.objects.get(pk=request.POST.get(key))
-                    fastqs.append(request.POST.get(key))
-            except Exception as e:
-                print(e)  
-                pass
+# def make_SKIPPER_form(form, request):
+#     '''
+#     If download manifest button is clicked, generates list of FASTQs, 
+#     and csv file is downloaded onto the page. If download config button is 
+#     clicked, will download a 'Skipper_config.py file'. If adding sample, 
+#     creates a new FASTQ object. Otherwise, deletes FASTQ object.
+#     Args:
+#         form: SkipperConfigManifestForm
+#         request: HttpRequest
 
-        if form.is_valid():
-            clip = form.save(commit=False)
-            clip.fastqs = ','.join(fastqs)
-            clip.save()
-            file_data = skipper_tsv(clip)   # generate tsv 
-            response = HttpResponse(
-                file_data, content_type='application/text charset=utf-8')
-            f = request.POST.get('manifest', 'manifest.csv')
-            response['Content-Disposition'] = f'attachment; filename="{f}"'
-            return response
+#     Returns:
+#         response: HttpResponse
+#     '''
+#     if request.POST.get("save_manifest"):   # "Save and Download MANIFEST"
+#         fastqs = []
+#         for key in request.POST.keys():     # generate list of fastqs
+#             try:
+#                 if key.startswith('fqid_'): 
+#                     SingleEndFastq.objects.get(pk=request.POST.get(key))
+#                     fastqs.append(request.POST.get(key))
+#             except Exception as e:
+#                 print(e)  
+#                 pass
 
-    elif request.POST.get("save_config"):   # "Save and Download CONFIG"
-        if form.is_valid():
-            clip = form.save(commit=False)
-            clip.save()
-            file_data = skipper_config(clip)
-            response = HttpResponse(
-                file_data, content_type='application/text charset=utf-8')
-            f = 'Skipper_config.py'
-            response['Content-Disposition'] = f'attachment; filename="{f}"'
-            return response
+#         if form.is_valid():
+#             clip = form.save(commit=False)
+#             clip.fastqs = ','.join(fastqs)
+#             clip.save()
+#             file_data = skipper_tsv(clip)   # generate tsv 
+#             response = HttpResponse(
+#                 file_data, content_type='application/text charset=utf-8')
+#             f = request.POST.get('manifest', 'manifest.csv')
+#             response['Content-Disposition'] = f'attachment; filename="{f}"'
+#             return response
 
-    elif request.POST.get("newItem"):       # "Add Sample" button
-        ip_fastq_path = request.POST.get("ip_fastq_path", None)
-        ip_adapter_path = request.POST.get("ip_adapter_path", None)
-        sminput_fastq_path = request.POST.get("sminput_fastq_path", None)
-        sminput_adapter_path = request.POST.get("sminput_adapter_path", None)
-        cells = request.POST.get("cells", None)
-        experiment = request.POST.get("experiment", None)
-        sample = request.POST.get("sample", None)
-        ip_rep = request.POST.get("ip_rep", None)
-        sminput_rep = request.POST.get("sminput_rep", None)
-        submitter = request.user
+#     elif request.POST.get("save_config"):   # "Save and Download CONFIG"
+#         if form.is_valid():
+#             clip = form.save(commit=False)
+#             clip.save()
+#             file_data = skipper_config(clip)
+#             response = HttpResponse(
+#                 file_data, content_type='application/text charset=utf-8')
+#             f = 'Skipper_config.py'
+#             response['Content-Disposition'] = f'attachment; filename="{f}"'
+#             return response
 
-        make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
-                    sminput_adapter_path, sminput_rep,
-                    cells, experiment, sample, submitter, request)
-    else:                                   # Delete fastq
-        for key in request.POST.keys():
-            if key.startswith('delete_fqid_'):
-                    SingleEndFastq.objects.filter(
-                    id=int(key.split('delete_fqid_')[1])).delete()
+#     elif request.POST.get("newItem"):       # "Add Sample" button
+#         ip_fastq_path = request.POST.get("ip_fastq_path", None)
+#         ip_adapter_path = request.POST.get("ip_adapter_path", None)
+#         sminput_fastq_path = request.POST.get("sminput_fastq_path", None)
+#         sminput_adapter_path = request.POST.get("sminput_adapter_path", None)
+#         cells = request.POST.get("cells", None)
+#         experiment = request.POST.get("experiment", None)
+#         sample = request.POST.get("sample", None)
+#         ip_rep = request.POST.get("ip_rep", None)
+#         sminput_rep = request.POST.get("sminput_rep", None)
+#         submitter = request.user
+
+#         make_fastq(ip_fastq_path, ip_adapter_path, ip_rep, sminput_fastq_path,
+#                     sminput_adapter_path, sminput_rep,
+#                     cells, experiment, sample, submitter, request)
+#     else:                                   # Delete fastq
+#         for key in request.POST.keys():
+#             if key.startswith('delete_fqid_'):
+#                     SingleEndFastq.objects.filter(
+#                     id=int(key.split('delete_fqid_')[1])).delete()
 
 def make_fastq(replicate, path, adapter, cells, experiment, sample, 
                    submitter, request): 
@@ -239,55 +239,55 @@ def CLIP_yaml(clip):
     return "#!/usr/bin/env eCLIP_singleend\n" + yaml.dump(
         field_dict, default_flow_style=False)
 
-def skipper_tsv(clip):
-    '''
-    Create TSV of SKIPPER form
-    Args:
-        clip: SkipperConfigManifestForm
+# def skipper_tsv(clip):
+#     '''
+#     Create TSV of SKIPPER form
+#     Args:
+#         clip: SkipperConfigManifestForm
 
-    Returns:
-        rows: string
-    '''
-    rows = ','.join([
-        'Experiment', 'Sample', 'Cells',
-        'Input_replicate', 'Input_adapter', 'Input_fastq',
-        'CLIP_replicate', 'CLIP_adapter', 'CLIP_fastq',
-        '\n'
-    ])
+#     Returns:
+#         rows: string
+#     '''
+#     rows = ','.join([
+#         'Experiment', 'Sample', 'Cells',
+#         'Input_replicate', 'Input_adapter', 'Input_fastq',
+#         'CLIP_replicate', 'CLIP_adapter', 'CLIP_fastq',
+#         '\n'
+#     ])
 
-    for field, value in clip.__dict__.items():
-        if field == 'fastqs':
-            for i in value.split(','):
-                fastq = SingleEndFastq.objects.get(pk=i)
-                row = ','.join([
-                    fastq.experiment,
-                    fastq.sample,
-                    fastq.cells,
-                    str(fastq.ip_rep),
-                    fastq.sminput_adapter_path,
-                    fastq.sminput_path,
-                    str(fastq.sminput_rep),
-                    fastq.ip_adapter_path,
-                    fastq.ip_path,
-                ])
-                rows += row + "\n"
-    return rows
+#     for field, value in clip.__dict__.items():
+#         if field == 'fastqs':
+#             for i in value.split(','):
+#                 fastq = SingleEndFastq.objects.get(pk=i)
+#                 row = ','.join([
+#                     fastq.experiment,
+#                     fastq.sample,
+#                     fastq.cells,
+#                     str(fastq.ip_rep),
+#                     fastq.sminput_adapter_path,
+#                     fastq.sminput_path,
+#                     str(fastq.sminput_rep),
+#                     fastq.ip_adapter_path,
+#                     fastq.ip_path,
+#                 ])
+#                 rows += row + "\n"
+#     return rows
 
-def skipper_config(clip):
-    '''
-    Create CONFIG from SKIPper form
-    Args:
-        clip: SkipperConfigManifestForm
+# def skipper_config(clip):
+#     '''
+#     Create CONFIG from SKIPper form
+#     Args:
+#         clip: SkipperConfigManifestForm
 
-    Returns:
-        config_string: string
-    '''
-    config_string = ""
-    for field, value in clip.__dict__.items():
-        if field == 'informative_read' or field == 'uninformative_read' or \
-                field == 'umi_size':
-            config_string += f'{field.upper()} = {value}\n'
-        elif field != '_state' and field != 'id' and \
-                field != 'barcode_file' and field != 'fastqs':
-            config_string += f'{field.upper()} = \"{value}\"\n'
-    return config_string
+#     Returns:
+#         config_string: string
+#     '''
+#     config_string = ""
+#     for field, value in clip.__dict__.items():
+#         if field == 'informative_read' or field == 'uninformative_read' or \
+#                 field == 'umi_size':
+#             config_string += f'{field.upper()} = {value}\n'
+#         elif field != '_state' and field != 'id' and \
+#                 field != 'barcode_file' and field != 'fastqs':
+#             config_string += f'{field.upper()} = \"{value}\"\n'
+#     return config_string

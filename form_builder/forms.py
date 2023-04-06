@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import HiddenInput, Select
-from .models import ClipperManifest, SkipperManifest, SingleEndFastq, RnaSeqManifest
+from .models import ClipperManifest, SingleEndFastq
 
 
 class CLIPManifestForm(forms.ModelForm):
@@ -22,7 +22,7 @@ class CLIPManifestForm(forms.ModelForm):
                                     # using separate input
         }
 
-
+'''
 class SkipperConfigManifestForm(forms.ModelForm):
     class Meta:
         model = SkipperManifest
@@ -68,7 +68,7 @@ class SkipperConfigManifestForm(forms.ModelForm):
         }
 
 
-''' class FastqForm(forms.ModelForm):
+class FastqForm(forms.ModelForm):
     class Meta:
         model = SingleEndFastq
         fields = (

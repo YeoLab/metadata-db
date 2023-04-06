@@ -38,7 +38,6 @@ def get_chrome_choices(star_choices):
     return chrom_choices
 
 barcode_choices = get_refs_choices("barcodes_choices")
-#three_prime_adapter_choices = get_refs_choices('three_prime_adapter_choices')
 three_prime_adapter_clip_choices = get_refs_choices('three_prime_adapter_clip_choices')
 three_prime_adapter_skipper_choices = get_refs_choices('three_prime_adapter_skipper_choices')
 three_prime_adapter_choices = get_refs_choices('three_prime_adapter_choices')    

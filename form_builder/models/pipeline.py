@@ -17,8 +17,11 @@ class ClipperManifest(models.Model): #change to manifest instead of fastq
     blacklist_file = models.CharField(
         max_length=120, choices=exclusion_choices, default=exclusion_choices[0])
     fastqs = models.CharField(max_length=200, blank=True)
-    #fastqs = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
 '''
+    fastqs = models.ForeignKey(User, on_delete=models.CASCADE)
+
     def get_three_prime_adapters(SingleEndFastq):
         return os.path.join(
             "/projects/ps-yeolab4/software/eclip/0.7.1/examples/inputs",
@@ -26,7 +29,7 @@ class ClipperManifest(models.Model): #change to manifest instead of fastq
     
     def __str__(self):
         return self.dataset
-'''
+
 
 
 class SkipperManifest(SingleEndFastq):
@@ -133,4 +136,4 @@ class RnaSeqManifest(SingleEndFastq):
         max_length=2, choices=direction_choices, default="r")
     fastqs = models.CharField(max_length=200, blank=True)
     # add fields later, but similar to SEFastq
-
+'''

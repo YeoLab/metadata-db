@@ -10,9 +10,9 @@ urlpatterns = [
     # <int:pk> expects integer value and transfer it to a view as a variable called pk
     # / before finishing URL
     path('CLIPPER/', views.CLIP_form, name='CLIP_form'),
-    path('SKIPPER/', views.SKIPPER_form, name='SKIPPER_form'),
+    #path('SKIPPER/', views.SKIPPER_form, name='SKIPPER_form'),
     path('clipper/', views.CLIP_form, name='CLIP_form'),
-    path('skipper/', views.SKIPPER_form, name='SKIPPER_form'),
-    path('rnaseqSE/', views.rnaseqSE_form, name='rnaseqSE_form'),
-    path('rnaseqPE/', views.rnaseqPE_form, name='rnaseqPE_form'),
+    #path('skipper/', views.SKIPPER_form, name='SKIPPER_form'),
+    #path('rnaseqSE/', views.rnaseqSE_form, name='rnaseqSE_form'),
+    #path('rnaseqPE/', views.rnaseqPE_form, name='rnaseqPE_form'),
 ]
