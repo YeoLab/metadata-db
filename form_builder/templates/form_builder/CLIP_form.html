@@ -15,21 +15,21 @@
                 <label for="experiment">Experiment name (alphanumeric or underscores only, no spaces)</label>
                 <div class="col"><input class="form-control" type="text" name="experiment" id="experiment" pattern="[a-zA-Z0-9_]+" list="experiment-select"></div>
                 <datalist name="experiment-select" id="experiment-select"> 
-                    {% for fastq in fastq %}
+                    {% for fastq in SEfastqs %}
                     <option value="{{fastq.experiment}}">{{ fastq.experiment }}</option>
                     {% endfor %}
                 </datalist>
                 <label for="sample">Sample name (alphanumeric or underscores only, no spaces)</label>
                 <div class="col"><input class="form-control" type="text" name="sample" id="sample" pattern="[a-zA-Z0-9_]+" list="sample-select"></div>
                 <datalist name="sample-select" id="sample-select"> 
-                    {% for fastq in fastq %}
+                    {% for fastq in SEfastqs %}
                     <option value="{{fastq.sample}}">{{ fastq.sample }}</option>
                     {% endfor %}
                 </datalist>
                 <label for="cells">Cells (alphanumeric or underscores only, no spaces)</label>
                 <div class="col"><input class="form-control" type="text" name="cells" id="cells" pattern="[a-zA-Z0-9_]+" list="cell-select"></div>
                 <datalist name="cell-select" id="cell-select"> 
-                    {% for fastq in fastq %}
+                    {% for fastq in SEfastqs %}
                     <option value="{{fastq.cells}}">{{ fastq.cells }}</option>
                     {% endfor %}
                 </datalist>

@@ -1,290 +1,142 @@
+# imports
 from django.contrib.auth.decorators import login_required
-# include model we've written in models.py
-# . before models means curr directory or current app
-from django.contrib import messages
 from mysite import settings
-from .models import Fastq
+from .models import SingleEndFastq
 from django.shortcuts import render
-from .forms import CLIPManifestForm, SkipperConfigManifestForm
+from .forms import CLIPManifestForm#, SkipperConfigManifestForm
+from .utils import *
+
 import yaml
 from django.http import HttpResponse
 
 
 @login_required
 def CLIP_form(request):
-    fastq = Fastq.objects.filter(submitter=request.user)
-
+    SEfastqs = SingleEndFastq.objects.filter(submitter=request.user)
     if request.method == 'POST':
         form = CLIPManifestForm(request.POST)
+        data = make_CLIP_form(form, request)
+        if data:
+            return data
+    else:
+        form = CLIPManifestForm()
+
+    return render(request, 'form_builder/CLIP_form.html', {'form': form,
+                                                           'SEfastqs': SEfastqs})
+
+'''
+@login_required
+def SKIPPER_form(request):
+    fastq = SingleEndFastq.objects.filter(submitter=request.user)
+    if request.method == 'POST':
+        form = SkipperConfigManifestForm(request.POST)
+        data = make_SKIPPER_form(form, request)
+        if data:
+            return data
+    else:
+        form = SkipperConfigManifestForm()
+    return render(request, 'form_builder/SKIPPER_form.html', {'form': form}) #, 'fastq': fastq})
+
+
+def rnaseqSE_form(request):
+    fastq = SingleEndFastq.objects.filter(submitter=request.user)
+    # submit form with filled out fields
+    if request.method == 'POST':
+        form = RnaseqForm(request.POST)
+        # downloading yaml file
         if request.POST.get("save"):
             fastqs = []
             for key in request.POST.keys():
                 try:
-                    if key.startswith('fqid_'):  # TODO: refactor, hacky
+                    # find added fastqs
+                    if key.startswith('fqid_'):
                         Fastq.objects.get(pk=request.POST.get(key))
+                        # append to fastq array
                         fastqs.append(request.POST.get(key))
                 except Exception as e:
-                    print(e)  # TODO: log
+                    print(e)
                     pass
 
+            # filled out form fields
             if form.is_valid():
-                clip = form.save(commit=False)
-                clip.fastqs = ','.join(fastqs)  # fastqs is a CharField, save all fastq ids as str(comma-separated list)
-                clip.save()
-                file_data = CLIP_yaml(clip)
-                # set variables to field values
-                # return redirect('/CLIP/')
-                response = HttpResponse(file_data, content_type='application/text charset=utf-8')
+                rnaseq = form.save(commit=False)
+                rnaseq.fastqs = ','.join(fastqs)
+                rnaseq.save()
+                # generate yaml file
+                file_data = rnaseqSE_yaml(rnaseq)
+                response = HttpResponse(
+                    file_data, content_type='application/text charset=utf-8')
                 f = request.POST.get('dataset', 'manifest')
+                # download attachment
                 response['Content-Disposition'] = f'attachment; filename="{f}.yaml"'
                 return response
-
-        elif request.POST.get("newItem"):
-            ip_fastq_path = request.POST.get("ip_fastq_path")
-            ip_adapter_path = request.POST.get("ip_adapter_path")
-            sminput_fastq_path = request.POST.get("sminput_fastq_path")
-            sminput_adapter_path = request.POST.get("sminput_adapter_path")
-            cells = request.POST.get("cells")
-            experiment = request.POST.get("experiment")
-            sample = request.POST.get("sample")
-            ip_rep = request.POST.get("ip_rep")
-            sminput_rep = request.POST.get("sminput_rep")
-            submitter = request.user
-
-            # test for valid inputs
-            if ip_fastq_path is None or ip_adapter_path is None or ip_rep is None or \
-                sminput_fastq_path is None or sminput_adapter_path is None or sminput_rep is None or \
-                cells is None or experiment is None or sample is None or submitter is None:
-                messages.error(
-                    request,
-                    f'Failed to add sample {sample} to the database (are all fields completed?)'
-                )
-
-            # test for duplicate fastq paths
-            elif len(Fastq.objects.filter(sample=sample, ip_path=ip_fastq_path, sminput_path=sminput_fastq_path)) > 0:
-                messages.error(
-                    request,
-                    f' Fastq path: {ip_fastq_path} and {sminput_fastq_path} already exists! Refusing to add to database.'
-                )
-
-            # test for duplicate reps for same sample
-            elif len(Fastq.objects.filter(sample=sample, ip_rep=ip_rep, sminput_rep=sminput_rep, submitter=request.user)) > 0:
-                messages.error(
-                    request,
-                    f'IP Replicate {ip_rep} and Size-matched Input Replicate {sminput_rep} for \
-                    sample {sample} already exists! Refusing to add to database.'
-                )
-
-            else:
-                if len(Fastq.objects.filter(sample=sample, ip_rep=ip_rep, submitter=request.user)) > 0:
-                    messages.warning(
-                        request,
-                        f'Warning - {sample} IP Replicate {ip_rep} exists in database (but with a different Size-matched Input replicate).'
-                    )
-                if len(Fastq.objects.filter(sample=sample, sminput_rep=sminput_rep, submitter=request.user)) > 0:
-                    messages.warning(
-                        request,
-                        f'Warning - {sample} Size-matched Input Replicate {sminput_rep} exists in database (but with a different IP replicate).'
-                    )
-                Fastq.objects.create(
-                    submitter=submitter,
-                    experiment=experiment,
-                    sample=sample,
-                    ip_title=sample + "_CLIP_" + ip_rep,
-                    ip_rep=ip_rep,
-                    ip_path=ip_fastq_path,
-                    ip_adapter_path=ip_adapter_path,
-                    ip_complete=False,
-                    cells=cells,
-                    sminput_title=sample + "_SMINPUT_" + sminput_rep,
-                    sminput_rep=sminput_rep,
-                    sminput_path=sminput_fastq_path,
-                    sminput_adapter_path=sminput_adapter_path,
-                    sminput_complete=False
-                )
-        else:
-            for key in request.POST.keys():
-                if key.startswith('delete_fqid_'):
-                    Fastq.objects.filter(id=int(key.split('delete_fqid_')[1])).delete()
+    # blank form
     else:
-        form = CLIPManifestForm()
-    return render(request, 'form_builder/CLIP_form.html', {'form': form, 'fastq': fastq})
+        form = RnaseqForm()
+    return render(request, 'form_builder/rnaseqSE_form.html', {'form': form})
 
 
-@login_required
-def SKIPPER_form(request):
-    fastq = Fastq.objects.filter(submitter=request.user)
-
+def rnaseqPE_form(request):
+    fastq = SingleEndFastq.objects.filter(submitter=request.user)
+    # submit form with filled out fields
     if request.method == 'POST':
-        form = SkipperConfigManifestForm(request.POST)
-        if request.POST.get("save_manifest"):
+        form = RnaseqForm(request.POST)
+        # downloading yaml file
+        if request.POST.get("save"):
             fastqs = []
             for key in request.POST.keys():
                 try:
-                    if key.startswith('fqid_'):  # TODO: refactor, hacky
+                    # find added fastqs
+                    if key.startswith('fqid_'):
                         Fastq.objects.get(pk=request.POST.get(key))
+                        # append to fastq array
                         fastqs.append(request.POST.get(key))
                 except Exception as e:
-                    print(e)  # TODO: log
+                    print(e)
                     pass
 
+            # filled out form fields
             if form.is_valid():
-                clip = form.save(commit=False)
-                clip.fastqs = ','.join(fastqs)  # fastqs is a CharField, save all fastq ids as str(comma-separated list)
-
-                clip.save()
-                file_data = skipper_tsv(clip)
-                response = HttpResponse(file_data, content_type='application/text charset=utf-8')
-                f = request.POST.get('manifest', 'manifest.csv')
-                response['Content-Disposition'] = f'attachment; filename="{f}"'
+                rnaseq = form.save(commit=False)
+                rnaseq.fastqs = ','.join(fastqs)
+                rnaseq.save()
+                # generate yaml file
+                file_data = rnaseqPE_yaml(rnaseq)
+                response = HttpResponse(
+                    file_data, content_type='application/text charset=utf-8')
+                f = request.POST.get('dataset', 'manifest')
+                # download attachment
+                response['Content-Disposition'] = f'attachment; filename="{f}.yaml"'
                 return response
-        elif request.POST.get("save_config"):
-
-            if form.is_valid():
-                clip = form.save(commit=False)
-                clip.save()
-                file_data = skipper_config(clip)
-                response = HttpResponse(file_data, content_type='application/text charset=utf-8')
-                f = 'Skipper_config.py'
-                response['Content-Disposition'] = f'attachment; filename="{f}"'
-                return response
-        elif request.POST.get("newItem"):
-            ip_fastq_path = request.POST.get("ip_fastq_path", None)
-            ip_adapter_path = request.POST.get("ip_adapter_path", None)
-            sminput_fastq_path = request.POST.get("sminput_fastq_path", None)
-            sminput_adapter_path = request.POST.get("sminput_adapter_path", None)
-            cells = request.POST.get("cells", None)
-            experiment = request.POST.get("experiment", None)
-            sample = request.POST.get("sample", None)
-            ip_rep = request.POST.get("ip_rep", None)
-            sminput_rep = request.POST.get("sminput_rep", None)
-            submitter = request.user
-
-            if len(Fastq.objects.filter(sample=sample, ip_path=ip_fastq_path, sminput_path=sminput_fastq_path)) > 0:
-                messages.error(
-                    request,
-                    f' Fastq path: {ip_fastq_path} and {sminput_fastq_path} already exists! Refusing to add to database.'
-                )
-            if ip_fastq_path is None or ip_adapter_path is None or ip_rep is None or \
-                sminput_fastq_path is None or sminput_adapter_path is None or sminput_rep is None or \
-                cells is None or experiment is None or sample is None or submitter is None:
-                messages.error(
-                    request,
-                    f'Failed to add sample {sample} to the database (are all fields completed?)'
-                )
-            elif len(Fastq.objects.filter(sample=sample, ip_rep=ip_rep, sminput_rep=sminput_rep, submitter=request.user)) > 0:
-                messages.error(
-                    request,
-                    f'IP Replicate {ip_rep} and Size-matched Input Replicate {sminput_rep} for \
-                    sample {sample} already exists! Refusing to add to database.'
-                )
-            else:
-                if len(Fastq.objects.filter(sample=sample, ip_rep=ip_rep, submitter=request.user)) > 0:
-                    messages.warning(
-                        request,
-                        f'Warning - {sample} IP Replicate {ip_rep} exists in database (but with a different Size-matched Input replicate).'
-                    )
-                if len(Fastq.objects.filter(sample=sample, sminput_rep=sminput_rep, submitter=request.user)) > 0:
-                    messages.warning(
-                        request,
-                        f'Warning - {sample} Size-matched Input Replicate {sminput_rep} exists in database (but with a different IP replicate).'
-                    )
-                Fastq.objects.create(
-                    submitter=submitter,
-                    experiment=experiment,
-                    sample=sample,
-                    ip_title=sample + "_CLIP_" + ip_rep,
-                    ip_rep=ip_rep,
-                    ip_path=ip_fastq_path,
-                    ip_adapter_path=ip_adapter_path,
-                    ip_complete=False,
-                    cells=cells,
-                    sminput_title=sample + "_SMINPUT_" + sminput_rep,
-                    sminput_rep=sminput_rep,
-                    sminput_path=sminput_fastq_path,
-                    sminput_adapter_path=sminput_adapter_path,
-                    sminput_complete=False
-                )
-        else:
-            for key in request.POST.keys():
-                if key.startswith('delete_fqid_'):
-                    Fastq.objects.filter(id=int(key.split('delete_fqid_')[1])).delete()
+    # blank form
     else:
-        form = SkipperConfigManifestForm()
-    return render(request, 'form_builder/SKIPPER_form.html', {'form': form, 'fastq': fastq})
+        form = RnaseqForm()
+    return render(request, 'form_builder/rnaseqPE_form.html', {'form': form})
 
 
-def CLIP_yaml(clip):
-    # initialize new YAML file by initializing dict
+def rnaseqSE_yaml(rnaseq):
     field_dict = dict()
-
-    field_dict['samples'] = []
-
-    # iterate through form field names
-    for field, value in clip.__dict__.items():
+    field_dict['reads'] = []
+    for field, value in rnaseq.__dict__.items():
         if field == 'fastqs':
             for i in value.split(','):
                 fastq = Fastq.objects.get(pk=i)
-                field_dict['samples'].append([
-                    {'name': fastq.ip_title, 'read1': {'class': 'File', 'path': fastq.ip_path}, 'adapters': {'class': 'File', 'path': fastq.ip_adapter_path}},
-                    {'name': fastq.sminput_title, 'read1': {'class': 'File', 'path': fastq.sminput_path}, 'adapters': {'class': 'File', 'path': fastq.sminput_adapter_path}},
+                field_dict['reads'].append([
+                    # TODO: replace empty strings with necessary components
+                    {'name':  fastq.ip_title + '-rep' + '',
+                     'read1': {'class': 'File', 'path': ''}},
                 ])
         elif field in ['speciesGenomeDir', 'repeatElementGenomeDir']:
             field_dict[field] = {'class': 'Directory', 'path': value}
-        elif field in ['chrom_sizes', 'blacklist_file']:
+        elif field in ['speciesChromSizes', 'b_adapters']:
             field_dict[field] = {'class': 'File', 'path': value}
         elif field != '_state' and field != 'barcode_file' and field != 'id':
             field_dict[field] = value
+    return "#!/usr/bin/env RNASEQ_singleend\n" + yaml.dump(field_dict, default_flow_style=False)
 
-    # write to YAML
-    # with open(r'./output_yaml/sample_output-' + str(clip.id) + '.yaml', "w") as file:
-    #     file.write("#!/usr/bin/env eCLIP_singleend\n")
-    #     documents = yaml.dump(field_dict, file)
-
-    return "#!/usr/bin/env eCLIP_singleend\n" + yaml.dump(field_dict,default_flow_style=False)
-
-
-def skipper_tsv(clip):
-    # initialize new YAML file by initializing dict
-    rows = ','.join([
-        'Experiment', 'Sample', 'Cells',
-        'Input_replicate', 'Input_adapter', 'Input_fastq',
-        'CLIP_replicate', 'CLIP_adapter', 'CLIP_fastq',
-        '\n'
-    ])
-    # iterate through form field names
-
-    for field, value in clip.__dict__.items():
-        if field == 'fastqs':
-            for i in value.split(','):
-                fastq = Fastq.objects.get(pk=i)
-
-                row = ','.join([
-                    fastq.experiment,
-                    fastq.sample,
-                    fastq.cells,
-                    str(fastq.ip_rep),
-                    fastq.sminput_adapter_path,
-                    fastq.sminput_path,
-                    str(fastq.sminput_rep),
-                    fastq.ip_adapter_path,
-                    fastq.ip_path,
-                ])
-                rows += row + "\n"
-
-    return rows
-
-
-def skipper_config(clip):
-    config_string = ""
-    # iterate through form field names
-    for field, value in clip.__dict__.items():
-        if field == 'informative_read' or field == 'uninformative_read' or field == 'umi_size':
-            config_string += f'{field.upper()} = {value}\n'
-        elif field != '_state' and field != 'id' and field != 'barcode_file' and field != 'fastqs':
-            config_string += f'{field.upper()} = \"{value}\"\n'
-    return config_string
-
+def rnaseqPE_yaml(rnaseq):
+    pass
+'''
 
 def index_view(request):
     context = {'LOGIN_URL': settings.LOGIN_URL}
