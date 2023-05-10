@@ -86,10 +86,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'form_builder',
     'globus_portal_framework',
     'social_django',
     'bootstrap_themes',
+    'form_builder',
 ]
 
 MIDDLEWARE = [
