@@ -77,8 +77,6 @@ def get_linux_ec2_private_ip():
 priv_ip = get_linux_ec2_private_ip()
 if priv_ip:
     ALLOWED_HOSTS.append(priv_ip)
-
-print(ALLOWED_HOSTS)
 # Application definition
 
 INSTALLED_APPS = [
