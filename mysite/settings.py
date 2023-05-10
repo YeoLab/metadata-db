@@ -44,13 +44,8 @@ DEBUG = True if os.getenv('PLATFORM', 'DEV') != 'PRD' else False
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'pipelines.brian-yee.com',
     'pipelines.yeolab.com',
-    'us-west-1.elasticbeanstalk.com',
-    '172.31.9.147',
-    'metadata-db-dev.us-west-1.elasticbeanstalk.com',
     'metadata-db-dev.brian-yee.com',
-    '172.31.17.181'
 ]
 
 def get_linux_ec2_private_ip():
