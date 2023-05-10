@@ -53,7 +53,6 @@ ALLOWED_HOSTS = [
     '172.31.17.181'
 ]
 
-
 def get_linux_ec2_private_ip():
     """
     This will automatically add the instance's Private IP to ALLOWED_HOSTS
@@ -75,6 +74,11 @@ def get_linux_ec2_private_ip():
         except UnboundLocalError:
             pass
 
+priv_ip = get_linux_ec2_private_ip()
+if priv_ip:
+    ALLOWED_HOSTS.append(priv_ip)
+
+print(ALLOWED_HOSTS)
 # Application definition
 
 INSTALLED_APPS = [
