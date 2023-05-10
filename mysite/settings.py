@@ -44,15 +44,9 @@ DEBUG = True if os.getenv('PLATFORM', 'DEV') != 'PRD' else False
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'pipelines.brian-yee.com',
     'pipelines.yeolab.com',
-    'us-west-1.elasticbeanstalk.com',
-    '172.31.9.147',
-    'metadata-db-dev.us-west-1.elasticbeanstalk.com',
     'metadata-db-dev.brian-yee.com',
-    '172.31.17.181'
 ]
-
 
 def get_linux_ec2_private_ip():
     """
@@ -75,6 +69,9 @@ def get_linux_ec2_private_ip():
         except UnboundLocalError:
             pass
 
+priv_ip = get_linux_ec2_private_ip()
+if priv_ip:
+    ALLOWED_HOSTS.append(priv_ip)
 # Application definition
 
 INSTALLED_APPS = [
@@ -84,10 +81,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'form_builder',
     'globus_portal_framework',
     'social_django',
     'bootstrap_themes',
+    'form_builder',
 ]
 
 MIDDLEWARE = [

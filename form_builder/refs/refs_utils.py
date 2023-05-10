@@ -1,12 +1,12 @@
 from django.core.validators import RegexValidator
 import yaml
 import os
-
+from mysite.settings import STATIC_URL
 
 ALPHANUMERICUNDERSCORE = RegexValidator
 (r'^[0-9a-zA-Z_]*$', 'Only alphanumeric characters are allowed.')
-
-with open('form_builder/refs/refs.yaml', 'r') as stream:
+file_path = os.path.join(os.path.dirname(__file__), 'refs.yaml')
+with open(file_path, 'r') as stream:
     try:
         REFS = yaml.safe_load(stream)
     except yaml.YAMLError as exc:
