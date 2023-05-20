@@ -27,7 +27,6 @@
 
   </head>
   <body>
-
     {% block base_nav %}
     {% index_template 'globus-portal-framework/v2/components/base-nav.html' as base_nav %}
     {% include base_nav %}
@@ -38,7 +37,7 @@
       <ol class="breadcrumb">
         {% block breadcrumb_items %}
         <li class="breadcrumb-item {% is_active request 'index-selection' %}">
-          <a class="h5" href="{% url 'index-selection' %}">Manifest generator</a>
+          <a class="h5" href="{% url 'index-selection' %}">{{globus_portal_framework.project_title}}</a>
         </li>
         {% endblock %}
       </ol>
@@ -58,8 +57,11 @@
     {%block body%}
     {%endblock%}
 
+
+  </body>
+  <footer>
     <!-- Page footer -->
     {% index_template 'globus-portal-framework/v2/components/footer.html' as it_footer %}
     {% include it_footer %}
-  </body>
+  </footer>
 </html>
