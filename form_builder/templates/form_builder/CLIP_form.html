@@ -7,43 +7,20 @@
             <h1>eCLIP (CLIPper) Form Builder</h1>
             {{ form.as_p }} <!-- main form -->
         </div>
-
         <div class="container">
             <hr>
-            <h2>Add new sample (Full paths only)</h2>
+            <h2>Add multiple samples</h2>
             <div class="row">
-                <label for="experiment">Experiment name (alphanumeric or underscores only, no spaces)</label>
-                <div class="col"><input class="form-control" type="text" name="experiment" id="experiment" pattern="[a-zA-Z0-9_]+" list="experiment-select"></div>
-                <datalist name="experiment-select" id="experiment-select"> 
-                    {% for fastq in SEfastqs %}
-                    <option value="{{fastq.experiment}}">{{ fastq.experiment }}</option>
-                    {% endfor %}
-                </datalist>
-                <label for="sample">Sample name (alphanumeric or underscores only, no spaces)</label>
-                <div class="col"><input class="form-control" type="text" name="sample" id="sample" pattern="[a-zA-Z0-9_]+" list="sample-select"></div>
-                <datalist name="sample-select" id="sample-select"> 
-                    {% for fastq in SEfastqs %}
-                    <option value="{{fastq.sample}}">{{ fastq.sample }}</option>
-                    {% endfor %}
-                </datalist>
-                <label for="cells">Cells (alphanumeric or underscores only, no spaces)</label>
-                <div class="col"><input class="form-control" type="text" name="cells" id="cells" pattern="[a-zA-Z0-9_]+" list="cell-select"></div>
-                <datalist name="cell-select" id="cell-select"> 
-                    {% for fastq in SEfastqs %}
-                    <option value="{{fastq.cells}}">{{ fastq.cells }}</option>
-                    {% endfor %}
-                </datalist>
+                <label for="experiment">Use the Globus file browser to select one or more files.</label>
+                <button type="submit" name="experiment" class="info"><a href={{ globus_url }}>Globus</a></button>
             </div>
             <div class="row">
-                {% include 'form_builder/fastq_submit.html' %}
-            </div>
-            <div class="row my-4">
-                <div class="col-md">
-                    <button type="submit" name="newItem" value="newItem">Add sample</button>
-                </div>
+                <ul>Selected Fastqs:</ul>
+                {% for fi in files %}
+                    <li>{{fi}}</li>
+                {% endfor %}
             </div>
         </div>
-
         <div class="container my-4">
             <hr>
             {% include 'form_builder/fastq_display.html' %}

@@ -18,10 +18,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Provides path to blog
-    # path('', include('form_builder.urls')),
+    # Provides path to form_builder
+    path('', include('form_builder.urls')),
     # Provides Login urls for Globus Auth
     path('', include('social_django.urls', namespace='social')),
     # Provides the basic search portal
