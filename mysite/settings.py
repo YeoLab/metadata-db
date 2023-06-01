@@ -210,7 +210,7 @@ LOGGING = {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
             'formatter': 'default',
-            'filename': '/var/log/cp_log',
+            'filename': os.getenv('LOG_FILENAME'),
         }
     },
     'loggers': {
