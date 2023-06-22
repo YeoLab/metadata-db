@@ -45,6 +45,7 @@ SECRET_KEY = str(os.getenv('SECRET'))
 # SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = True if os.getenv('PLATFORM', 'DEV') != 'PRD' else False
+DOMAIN = 'http://localhost:8000/clipper/' if os.getenv('PLATFORM') == 'DEV' else 'https://metadata-db-dev.brian-yee.com/clipper/'
 
 def get_linux_ec2_private_ip():
     """

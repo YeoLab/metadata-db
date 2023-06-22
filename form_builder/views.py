@@ -17,6 +17,10 @@ def CLIP_form(request):
     files = []
     try:
         SEfastqs = SingleEndFastq.objects.filter(submitter=request.user)
+        for key in request.GET.keys():
+                if key.startswith('file'):
+                    files.append(os.path.join(base_url, request.GET.get(key)))
+
     except Exception as e:
         print(e)
         SEfastqs = []
@@ -38,7 +42,7 @@ def CLIP_form(request):
         'form': form,
         'SEfastqs': SEfastqs,
         'files': files,
-        'globus_url': "https://app.globus.org/file-manager?method=GET&origin_id=d9358457-3f23-4b35-bbae-68d2f4190545&origin_path=%2F&action=http://localhost:8000/clipper/"
+        'globus_url': "https://app.globus.org/file-manager?method=GET&origin_id=d9358457-3f23-4b35-bbae-68d2f4190545&origin_path=%2F&action="+ settings.DOMAIN
     }
     return render(request, 'form_builder/CLIP_form.html', context=context)
 
