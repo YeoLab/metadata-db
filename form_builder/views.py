@@ -68,17 +68,3 @@ def index_view(request):
     context = {'LOGIN_URL': settings.LOGIN_URL}
     template = 'form_builder/index.html'
     return render(request, template, context)
-
-
-@csrf_exempt
-def receive_data(request):
-    '''
-    Print POST data.
-    Args:
-        request: HttpRequest
-    Return:
-        HttpResponse
-    '''
-    print('post', request.POST)
-    context = {}
-    return render(request, 'form_builder/receive-data.html', context)

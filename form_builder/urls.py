@@ -8,5 +8,4 @@ urlpatterns = [
     path('', views.index_view, name='index_view'),
     path('CLIPPER/', views.CLIP_form, name='CLIP_form'),
     path('clipper/', views.CLIP_form, name='CLIP_form'),
-    path('receive-data/', views.receive_data, name='receive_data'),
 ]
