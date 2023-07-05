@@ -32,7 +32,7 @@ def get_rfm(search_result):
 SEARCH_INDEXES = {
     'perfdata': {
         'name': 'Performance Data',
-        'uuid': os.getenv('GLOBUS_CLIENT_ID', 'GLOBUS_CLIENT_ID_UNSET'),
+        'uuid': '5e83718e-add0-4f06-a00d-577dc78359bc',
         'fields': [
             'perfdata',
             ('remote_file_manifest', get_rfm),
@@ -257,9 +257,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
-
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -277,3 +275,4 @@ except ImportError:
 GLOBUS_PORTAL_FRAMEWORK_DEVELOPMENT_APP = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+X_FRAME_OPTIONS = 'SAMEORIGIN'

@@ -18,12 +18,14 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Provides path to blog
+    # Provides path to form_builder
     path('', include('form_builder.urls')),
-    # Provides the basic search portal
-    path('', include('globus_portal_framework.urls')),
     # Provides Login urls for Globus Auth
     path('', include('social_django.urls', namespace='social')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # Provides the basic search portal
+    path('', include('globus_portal_framework.urls')),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + \
+              static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

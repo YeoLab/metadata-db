@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
+import dash_bootstrap_components as dbc
+from mysite import fields
+from globus_portal_framework.constants import FILTER_MATCH_ALL
+
 
 # Your portal credentials for a Globus Auth Flow
 SOCIAL_AUTH_GLOBUS_KEY = os.getenv('GLOBUS_CLIENT_ID', 'GLOBUS_CLIENT_ID_UNSET')
@@ -25,6 +29,7 @@ LOGIN_URL = '/login/globus'
 # This dictates which scopes will be requested on each user login
 SOCIAL_AUTH_GLOBUS_SCOPE = [
     'urn:globus:auth:scope:search.api.globus.org:search',
+    'urn:globus:auth:scope:transfer.api.globus.org:all',
 ]
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -40,13 +45,6 @@ SECRET_KEY = str(os.getenv('SECRET'))
 # SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = True if os.getenv('PLATFORM', 'DEV') != 'PRD' else False
-
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'pipelines.yeolab.com',
-    'metadata-db-dev.brian-yee.com',
-]
 
 def get_linux_ec2_private_ip():
     """
@@ -69,12 +67,18 @@ def get_linux_ec2_private_ip():
         except UnboundLocalError:
             pass
 
-priv_ip = get_linux_ec2_private_ip()
-if priv_ip:
-    ALLOWED_HOSTS.append(priv_ip)
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'pipelines.yeolab.com',
+    'metadata-db-dev.brian-yee.com',
+    get_linux_ec2_private_ip(),
+]
+
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -98,14 +102,18 @@ MIDDLEWARE = [
     'globus_portal_framework.middleware.ExpiredTokenMiddleware',
     'globus_portal_framework.middleware.GlobusAuthExceptionMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
 
+BASE_TEMPLATES = 'globus-portal-framework/v2/'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'globus-portal-framework', 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -113,6 +121,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
                 'globus_portal_framework.context_processors.globals',
             ],
         },
@@ -181,6 +191,41 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': '%(asctime)s: %(funcName)s: %(levelname)s: %(lineno)d '
+                      '- %(message)s'
+        }
+    },
+    'handlers': {
+        'console': {  # noqa
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'default'
+        },
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'formatter': 'default',
+            'filename': os.getenv('LOG_FILENAME'),
+        }
+    },
+    'loggers': {
+        'django.db.backends': {  # noqa
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        '': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    }
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -208,3 +253,47 @@ MESSAGE_TAGS = {
         messages.WARNING: 'alert-warning',
         messages.ERROR: 'alert-danger',
  }
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+SEARCH_INDEXES = {
+    'search': {
+        'name': 'Search by RBP name',
+        'uuid': os.getenv('GLOBUS_INDEX_ID', None),
+        'fields': [
+            ("title", fields.title),
+            ("subject", "subject"),
+            ("file_list", "file_list"),
+        ],
+        'facets': [
+            {
+                'name': 'File',
+                'field_name': 'subject',
+                'type': 'terms'
+            },
+        ],
+        'filter_match': 'match-all',
+        'template_override_dir': 'search',
+        'test_index': True,
+        'facet_modifiers': [
+        ],
+    },
+
+}
+
+GLOBUS_CLIENT_LOADER = 'globus_portal_framework.gclients.load_globus_client'
+
+SEARCH_RESULTS_PER_PAGE = 10
+SEARCH_MAX_PAGES = 10
+# This will be the automatic search query when the user loads the page, if
+# they have not submitted their own query or there is no query loaded in the
+# session. "*" will automatically search everything, but may not be desirable
+# if there is a lot of search data in the index, as searches will take a while
+DEFAULT_QUERY = '*'
+DEFAULT_FILTER_MATCH = FILTER_MATCH_ALL
+
+PREVIEW_DATA_SIZE = 2048
+
+PROJECT_TITLE = 'METADATA DB'
+X_FRAME_OPTIONS = 'SAMEORIGIN'
