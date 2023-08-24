@@ -1,6 +1,6 @@
 # metadata-db
 
-## Currently hosted at: [pipelines.brian-yee.com](https://pipelines.brian-yee.com)
+## Currently hosted at: [pipelines.yeolab.com](https://pipelines.yeolab.com)
 
 Steps for deployment using Elastic Beanstalk:
 
