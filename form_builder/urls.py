@@ -15,4 +15,5 @@ urlpatterns = [
     #path('skipper/', views.SKIPPER_form, name='SKIPPER_form'),
     #path('rnaseqSE/', views.rnaseqSE_form, name='rnaseqSE_form'),
     #path('rnaseqPE/', views.rnaseqPE_form, name='rnaseqPE_form'),
+    path('receive-data/', views.receive_data, name='receive_data'),
 ]
